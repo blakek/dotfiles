@@ -65,7 +65,7 @@ alias st='subl'
 ##
 alias altool='/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool'
 alias chrome-browser='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
-alias firefox='/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox'
+alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
 
 ##
