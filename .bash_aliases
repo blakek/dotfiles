@@ -63,6 +63,7 @@ alias st='subl'
 ##
 # Shortcuts to OS X executables
 ##
+alias altool='/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool'
 alias chrome-browser='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 alias vscode='/Applications/Visual\ Studio\ Code.app/Contents/MacOS/Electron'
 alias firefox='/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox'
