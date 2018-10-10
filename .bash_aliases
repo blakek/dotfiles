@@ -23,6 +23,7 @@ alias sl='echo "🚂  choo-choo"; ls'
 # Defaults and alternatives for programs
 ##
 isInstalled ccat && alias cat=ccat
+isInstalled bat && alias cat=bat
 alias howdoi='how2 -l javascript'
 alias shrug='shrug | clipboard'
 alias webcoach='webcoach --details --description'
