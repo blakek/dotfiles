@@ -69,6 +69,16 @@ alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
 
 ##
+# Android shortcuts
+##
+alias android-rn-debug-menu='adb shell input keyevent 82'
+
+function android-start-emulator() {
+	local device=$(emulator -list-avds | ipt)
+	emulator -avd "${device}" $@
+}
+
+##
 # Functions
 ##
 function github() {

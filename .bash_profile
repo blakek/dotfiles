@@ -84,7 +84,8 @@ isInstalled thefuck && {
 # Android stuff
 if [ -d "${HOME}/Library/Android/sdk" ]; then
 	export ANDROID_HOME="${HOME}/Library/Android/sdk"
-	export PATH="${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
+	export ANDROID_SDK="${ANDROID_HOME}"
+	export PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
 fi
 
 # Always start on a good note
