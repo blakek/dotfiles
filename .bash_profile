@@ -76,11 +76,6 @@ source "$HOME/bin/prompts/triangle.sh" && {
 	repoColor=$e_light_green
 }
 
-# Correct stuff
-isInstalled thefuck && {
-	alias fuck='TF_CMD=$(TF_ALIAS=fuck PYTHONIOENCODING=utf-8 TF_SHELL_ALIASES=$(alias) thefuck $(fc -ln -1)) && eval $TF_CMD; history -s $TF_CMD'
-}
-
 # Android stuff
 if [ -d "${HOME}/Library/Android/sdk" ]; then
 	export ANDROID_HOME="${HOME}/Library/Android/sdk"
