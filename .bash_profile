@@ -83,5 +83,8 @@ if [ -d "${HOME}/Library/Android/sdk" ]; then
 	export PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
 fi
 
+# Rust stuff
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Always start on a good note
 true
