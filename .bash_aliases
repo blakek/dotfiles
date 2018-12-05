@@ -73,9 +73,9 @@ alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
 ##
 alias android-rn-debug-menu='adb shell input keyevent 82'
 
-function android-start-emulator() {
+function android-emulator() {
 	local device=$(emulator -list-avds | ipt)
-	emulator -avd "${device}" $@
+	emulator -avd "${device}" -no-boot-anim -ranchu $@ &
 }
 
 ##
