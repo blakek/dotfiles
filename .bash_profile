@@ -64,7 +64,7 @@ export LESS_TERMCAP_us=$(printf '\e[34m')
 import "${HOME}/.git-prompt.sh" && {
 	export GIT_PS1_SHOWDIRTYSTATE='yes'
 	export GIT_PS1_SHOWUNTRACKEDFILES='yes'
-	export GIT_PS1_SHOWSTASHSTATE=''
+	export GIT_PS1_SHOWSTASHSTATE='yes'
 	export GIT_PS1_SHOWUPSTREAM='auto'
 }
 
