@@ -36,10 +36,11 @@ export HISTIGNORE='exit'
 import "${HOME}/.bash_aliases"
 
 # bash completion
-isInstalled brew && import "$(brew --prefix)/etc/bash_completion"
-
-# git bash completion
-import "${HOME}/.git-completion.bash"
+if isInstalled brew; then
+	import "$(brew --prefix)/etc/bash_completion"
+else
+	import "${HOME}/.git-completion.bash"
+fi
 
 # Add directory-specific node_modules to PATH
 export PATH="node_modules/.bin:${PATH}"
