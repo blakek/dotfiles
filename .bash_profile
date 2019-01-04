@@ -9,6 +9,9 @@ isInstalled() {
 	hash "$@" 2> /dev/null
 }
 
+# Import aliases
+import "${HOME}/.bash_aliases"
+
 # Set global environment variables and secrets
 set -o allexport
 import .env
@@ -37,9 +40,6 @@ export HISTCONTROL='ignoreboth'
 
 # List of history commands to ignore
 export HISTIGNORE='exit'
-
-# My aliases
-import "${HOME}/.bash_aliases"
 
 # bash completion
 if isInstalled brew; then
@@ -75,7 +75,7 @@ import "${HOME}/.git-prompt.sh" && {
 }
 
 # My prompt
-source "$HOME/bin/prompts/triangle.sh" && {
+source "${HOME}/bin/prompts/triangle.sh" && {
 	setPromptCommand
 	primaryColor=$e_white
 	errorColor=$e_light_red
@@ -90,8 +90,8 @@ if [ -d "${HOME}/Library/Android/sdk" ]; then
 	export PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
 fi
 
-# Rust stuff
-export PATH="$HOME/.cargo/bin:$PATH"
+# Add Rust binaries to PATH
+export PATH="${HOME}/.cargo/bin:${PATH}"
 
 # Always start on a good note
 true
