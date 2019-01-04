@@ -9,6 +9,11 @@ isInstalled() {
 	hash "$@" 2> /dev/null
 }
 
+# Set global environment variables and secrets
+set -o allexport
+import .env
+set +o allexport
+
 # Add my personal programs to PATH
 export PATH="${HOME}/bin:${PATH}"
 export BKLIB="${HOME}/bin/lib"
