@@ -14,7 +14,7 @@ import "${HOME}/.bash_aliases"
 
 # Set global environment variables and secrets
 set -o allexport
-import .env
+import "${HOME}/.env"
 set +o allexport
 
 # Add my personal programs to PATH
