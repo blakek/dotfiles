@@ -1,0 +1,74 @@
+# Global Git options
+# For documentation, see https://git-scm.com/docs/git-config
+
+[color]
+	# Use colors in Git commands that are capable of colored output when
+	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+	ui = auto
+
+[color "branch"]
+	current = green reverse
+	local = green
+	remote = red
+
+[color "diff-highlight"]
+
+[color "diff"]
+	meta = yellow
+	frag = cyan # line info
+	old = red # deletions
+	new = green # additions
+
+[core]
+	# Global .gitignore file
+	excludesfile = ~/.gitignore
+
+	# Make `git rebase` safer on macOS
+	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+	trustctime = false
+
+	# Speed up commands involving untracked files such as `git status`.
+	# https://git-scm.com/docs/git-update-index#_untracked_cache
+	untrackedCache = true
+
+[commit]
+	template = ~/.git-commit-template
+
+[diff]
+	# Detect copies as well as renames
+	renames = copies
+
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[github]
+	user = blakek
+
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+
+[push]
+	# https://git-scm.com/docs/git-config#git-config-pushdefault
+	# Don't require specifying a remote branch to track
+	default = current
+
+[user]
+	name = Blake Knight
+	email = oss.ideas@gmail.com
