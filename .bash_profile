@@ -76,7 +76,8 @@ import "${HOME}/.git-prompt.sh" && {
 }
 
 # My prompt
-source "${HOME}/bin/prompts/triangle.sh" && {
+# Symlink a prompt from ./prompts/* to ~/.bash_prompt to get started
+source "${HOME}/.bash_prompt" && {
 	setPromptCommand
 	primaryColor=$e_white
 	errorColor=$e_light_red
