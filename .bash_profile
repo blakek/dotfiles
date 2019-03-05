@@ -9,8 +9,9 @@ isInstalled() {
 	hash "$@" 2> /dev/null
 }
 
-# Import aliases
+# Import aliases & functions
 import "${HOME}/.bash_aliases"
+import "${HOME}/.bash_functions"
 
 # Set global environment variables and secrets
 set -o allexport

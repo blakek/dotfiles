@@ -51,14 +51,7 @@ alias gl='git log'
 alias glg='git log --graph --decorate --oneline --color | less -R'
 alias gp='git pull --prune'
 alias gs='git status'
-
-function gdf() {
-	git diff --color "$@" | diff-so-fancy | less -R
-}
-
 alias gh='github'
-
-alias st='subl'
 
 ##
 # Shortcuts to OS X executables
@@ -72,22 +65,3 @@ alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
 # Android shortcuts
 ##
 alias android-rn-debug-menu='adb shell input keyevent 82'
-
-function android-emulator() {
-	local device=$(emulator -list-avds | ipt)
-	emulator -avd "${device}" -no-boot-anim -ranchu $@ &
-}
-
-##
-# Functions
-##
-function github() {
-	github="$(type -fp github)"
-	[[ github == '' ]] && echo '`github` is not installed' && return
-	[[ $# -eq 0 ]] && "${github}" . || "${github}" "$@"
-}
-
-isInstalled ipt && function iseek() {
-	cd "$(ls -a -d */ .. | ipt)"
-	iseek
-}
