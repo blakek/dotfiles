@@ -38,6 +38,9 @@ alias blo='comm -12 <(brew outdated | sort) <(brew leaves | sort)'
 # Browsersync
 alias bs='browser-sync start --logLevel silent --server --files .'
 
+# VS Code
+alias c='code'
+
 # git
 alias g='git'
 alias gaa='git add .'
