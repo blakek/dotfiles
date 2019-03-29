@@ -44,7 +44,13 @@ export HISTIGNORE='exit'
 
 # bash completion
 if isInstalled brew; then
-	import "$(brew --prefix)/etc/bash_completion"
+	# Use bash-completion@2 if installed; fallback to v1
+	if [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]]; then
+		export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+		import "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+	else
+		import "$(brew --prefix)/etc/bash_completion"
+	fi
 else
 	import "${HOME}/.git-completion.bash"
 fi
