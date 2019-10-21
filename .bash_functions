@@ -46,6 +46,15 @@ isInstalled ipt && function p() {
 	fi
 }
 
+# Print ¯\_(ツ)_/¯ and copy to clipboard
+function shrug() {
+	if isInstalled clipboard; then
+		echo '¯\_(ツ)_/¯' | tee /dev/tty | clipboard
+	else
+		echo '¯\_(ツ)_/¯'
+	fi
+}
+
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
 # `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
 # the `.git` directory, listing directories first. The output gets piped into
