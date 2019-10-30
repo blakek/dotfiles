@@ -1,9 +1,10 @@
+tap "dart-lang/dart"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "homebrew/cask-versions"
-tap "homebrew/completions"
 tap "homebrew/core"
+tap "homebrew/services"
 tap "neovim/neovim"
 # Search tool like grep, but optimized for programmers
 brew "ack"
@@ -15,6 +16,10 @@ brew "bash-completion@2"
 brew "bat"
 # Fish completion for brew-cask
 brew "brew-cask-completion"
+# Formatting tools for C, C++, Obj-C, Java, JavaScript, TypeScript
+brew "clang-format"
+# Control the macOS dark mode from the command-line
+brew "dark-mode"
 # Bash, Zsh and Fish completion for Docker
 brew "docker-completion"
 # Docker-compose completion script
@@ -31,16 +36,24 @@ brew "gist"
 brew "git"
 # Simple and efficient way to access statistics in git
 brew "git-quick-stats"
+# Prevents you from committing sensitive information to a git repo
+brew "git-secrets"
+# Perl compatible regular expressions library
+brew "pcre"
+# Interpreted, interactive, object-oriented programming language
+brew "python"
+# Core application library for C
+brew "glib"
 # Open source programming language to build simple/reliable/efficient software
 brew "go"
-# Generic library support script
-brew "libtool"
 # Graph visualization software from AT&T and Bell Labs
 brew "graphviz"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
 # Improved top (interactive process viewer)
 brew "htop"
+# Generic library support script
+brew "libtool"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # JSON output from a shell
@@ -61,10 +74,10 @@ brew "n"
 brew "neofetch"
 # Utility for managing network connections
 brew "netcat"
+# Swiss-army knife of markup format conversion
+brew "pandoc"
 # Shell command parallelization utility
 brew "parallel"
-# Perl compatible regular expressions library
-brew "pcre"
 # Monitor data's progress through a pipe
 brew "pv"
 # Tools for and transforming and inspecting PDF files
@@ -75,6 +88,8 @@ brew "rename"
 brew "ripgrep"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
+# SOund eXchange: universal sound sample translator
+brew "sox"
 # Add a public key to a remote machine's authorized_keys file
 brew "ssh-copy-id"
 # Granddaddy of HTML tools, with support for modern standards
@@ -91,24 +106,30 @@ brew "tree"
 brew "unzip"
 # Pager/text based browser
 brew "w3m"
+# Executes a program periodically, showing output fullscreen
+brew "watch"
 # Watch files and take action when they change
 brew "watchman"
 # Internet file retriever
 brew "wget"
-# JavaScript package manager
-brew "yarn"
+# Bash completion for Wpcli
+brew "wp-cli-completion"
 # Bash completion for Yarn
 brew "yarn-completion"
+# The Dart SDK
+brew "dart-lang/dart/dart"
 cask "amazon-music"
 cask "betterzipql"
 cask "dropbox"
 cask "firefox"
 cask "font-ibm-plex"
+cask "google-chrome"
 cask "graphql-playground"
 cask "handbrakecli"
 cask "imageoptim"
 cask "keeweb"
 cask "provisionql"
+cask "pusher"
 cask "qlcolorcode"
 cask "qlimagesize"
 cask "qlmarkdown"
@@ -117,11 +138,12 @@ cask "qlstephen"
 cask "quicklook-csv"
 cask "quicklook-json"
 cask "quicklookapk"
+cask "react-native-debugger"
+cask "soundflower"
 cask "vlc"
 cask "xquartz"
-mas "Keynote", id: 409183694
+mas "GarageBand", id: 682658836
+mas "iMovie", id: 408981434
 mas "Microsoft Remote Desktop", id: 715768417
-mas "Numbers", id: 409203825
-mas "Pages", id: 409201541
 mas "Sip", id: 507257563
-mas "Slack", id: 803453959
+mas "Xcode", id: 497799835
