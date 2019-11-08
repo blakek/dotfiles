@@ -135,7 +135,7 @@ main() {
 			printf 'linking %s => %s\n' "${file}" "${installRoot}/${file}"
 		fi
 
-		ln -Fs "${__dirname}/${file}" "${installRoot}/${file}"
+		ln -sfn "${__dirname}/${file}" "${installRoot}/${file}"
 	done
 }
 
