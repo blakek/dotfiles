@@ -27,5 +27,9 @@ promptCommand() {
 }
 
 setPromptCommand() {
-	PROMPT_COMMAND='promptCommand'
+	if hash __git_ps1; then
+		PROMPT_COMMAND='promptCommand'
+	else
+		setPS1
+	fi
 }
