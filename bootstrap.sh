@@ -91,6 +91,9 @@ main() {
 	local files=(
 		'bin/*'
 		'.bash_*'
+		'.gitconfig'
+		'.gitignore'
+		'.tmux.conf'
 	)
 
 	local conflicts=()
