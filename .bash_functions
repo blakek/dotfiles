@@ -22,8 +22,8 @@ isInstalled diff-so-fancy && function gdf() {
 
 function github() {
 	github="$(type -fp github)"
-	[[ github == '' ]] && echo '`github` is not installed' && return
-	[[ $# -eq 0 ]] && "${github}" . || "${github}" "$@"
+	[[ $github == '' ]] && echo '`github` is not installed' && return
+	([[ $# -eq 0 ]] && "${github}" .) || "${github}" "$@"
 }
 
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
