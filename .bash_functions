@@ -61,5 +61,5 @@ function shrug() {
 # `less` with options to preserve color and line numbers, unless the output is
 # small enough for one screen.
 isInstalled tree && function tre() {
-	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRX;
+	tree -aC -I '.git|.next|node_modules|bower_components' --dirsfirst "$@" | less -FRX
 }
