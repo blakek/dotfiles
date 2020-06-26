@@ -12,12 +12,18 @@ local = green
 remote = red
 
 [color "diff-highlight"]
+oldNormal = red bold
+oldHighlight = red bold 52
+newNormal = green bold
+newHighlight = green bold 22
 
 [color "diff"]
-meta = yellow
-frag = cyan # line info
-old = red   # deletions
-new = green # additions
+commit = yellow bold     # commit headers
+meta = yellow            # change info
+frag = white reverse     # line info
+old = red bold           # deletions
+new = green bold         # additions
+whitespace = red reverse # whitespace errors
 
 [core]
 # Global .gitignore file
@@ -37,6 +43,15 @@ template = ~/.git-commit-template
 [diff]
 # Detect copies as well as renames
 renames = copies
+
+[diff "textutil"]
+textconv = textutil -convert html -stdout
+
+[diff "pandoc"]
+textconv = pandoc --to=gfm
+
+[diff "pandoc-text"]
+textconv = pandoc --to=plain
 
 [difftool "sourcetree"]
 cmd = opendiff \"$LOCAL\" \"$REMOTE\"
@@ -63,6 +78,9 @@ user = blakek
 [mergetool "sourcetree"]
 cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 trustExitCode = true
+
+[pull]
+rebase = false
 
 [push]
 # https://git-scm.com/docs/git-config#git-config-pushdefault
