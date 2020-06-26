@@ -8,11 +8,11 @@ isInstalled emulator && function android-emulator() {
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
 # Create a data URL from a file
 function dataurl() {
-	local mimeType=$(file -b --mime-type "$1");
+	local mimeType=$(file -b --mime-type "$1")
 	if [[ $mimeType == text/* ]]; then
-		mimeType="${mimeType};charset=utf-8";
+		mimeType="${mimeType};charset=utf-8"
 	fi
-	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')";
+	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
 }
 
 # Git diff with diff-so-fancy
@@ -31,17 +31,17 @@ function github() {
 # location
 function o() {
 	if [ $# -eq 0 ]; then
-		open .;
+		open .
 	else
-		open "$@";
-	fi;
+		open "$@"
+	fi
 }
 
 # Open projects
 isInstalled ipt && function p() {
 	developDirectory="${HOME}/developer"
 	projectDirectory=$(ls $developDirectory | ipt -M 'Choose a project' -a)
-	if [[ "$projectDirectory" != '' ]]; then
+	if [[ $projectDirectory != '' ]]; then
 		cd "${developDirectory}/${projectDirectory}" && code .
 	fi
 }
@@ -63,4 +63,3 @@ function shrug() {
 isInstalled tree && function tre() {
 	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRX;
 }
-

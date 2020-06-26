@@ -1,12 +1,12 @@
 # If a file exists and is not empty, source it. Otherwise, return an falsy value
 import() {
-	[ -s "$1" ] && source "$1"
+	[ -r "$1" ] && source "$1"
 }
 
 # Return truthy/falsy value indicating if every argument is installed
 # (i.e. found in hash lookup)
 isInstalled() {
-	hash "$@" 2> /dev/null
+	hash "$@" 2>/dev/null
 }
 
 # Import aliases & functions
