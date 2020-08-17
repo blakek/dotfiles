@@ -3,7 +3,7 @@
 ##
 alias l='ls -CF'
 alias la='ls -A'
-alias ll='ls -lhF'
+alias ll='ls -lhAF'
 
 alias grep='grep --colour=auto'
 alias egrep='egrep --colour=auto'
