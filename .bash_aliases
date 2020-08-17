@@ -15,7 +15,6 @@ alias reboot='sudo reboot'
 ##
 # Fix common typos
 ##
-alias aotm='atom'
 alias celar='echo "😜"; sleep .25; clear'
 alias sl='echo "🚂  choo-choo"; ls'
 
