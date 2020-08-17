@@ -99,7 +99,7 @@ if [ -d "${HOME}/Library/Android/sdk" ]; then
 fi
 
 # Add Rust binaries to PATH
-export PATH="${HOME}/.cargo/bin:${PATH}"
+export PATH="${PATH}:${HOME}/.cargo/bin"
 
 # Always start on a good note
 true
