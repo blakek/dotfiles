@@ -6,6 +6,6 @@ __dirname="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 brew bundle dump --all --describe --force
 
 # Save applications installed with npm
-npm ls -g --depth=0 --json \
-  | fx 'Object.keys(this.dependencies).filter(d => d !== "npm")' \
-  > npm-global.json
+npm ls -g --depth=0 --json |
+	fx 'Object.keys(this.dependencies).filter(d => d !== "npm")' \
+		>npm-global.json

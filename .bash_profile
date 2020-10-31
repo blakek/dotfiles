@@ -6,7 +6,7 @@ import() {
 # Return truthy/falsy value indicating if every argument is installed
 # (i.e. found in hash lookup)
 isInstalled() {
-	hash "$@" 2> /dev/null
+	hash "$@" 2>/dev/null
 }
 
 # Import aliases & functions
@@ -85,10 +85,10 @@ import "${HOME}/.git-prompt.sh" && {
 # Symlink a prompt from ./prompts/* to ~/.bash_prompt to get started
 source "${HOME}/.bash_prompt" && {
 	setPromptCommand
-	primaryColor=$e_white
-	errorColor=$e_light_red
-	secondaryColor=$e_light_cyan
-	repoColor=$e_light_green
+	export primaryColor=$e_white
+	export errorColor=$e_light_red
+	export secondaryColor=$e_light_cyan
+	export repoColor=$e_light_green
 }
 
 # Android stuff
