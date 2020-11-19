@@ -48,7 +48,7 @@ fileIsConflict() {
 	output="$(diff "$src" "$dest")"
 
 	# File exists but has the same contents
-	if (( $? == 0 )); then
+	if (($? == 0)); then
 		return 1
 	fi
 
@@ -61,17 +61,26 @@ fileIsConflict() {
 }
 
 main() {
-	while (( $# > 0 )); do
+	while (($# > 0)); do
 		arg="$1"
 
 		case $arg in
-			-d|--dry-run) isDryRun='true';;
-			-D|--diff) shouldShowDiff='true';;
-			-f|--force) shouldForceRun='true';;
-			-h|--help) showHelp; exit;;
-			-v|--verbose) verbosity=1;;
-			-V|--version) echo "${versionString}"; exit;;
-			*) echo "Error: unrecognized argument '$1'. Use --help to show usage." >&2; exit 1;
+			-d | --dry-run) isDryRun='true' ;;
+			-D | --diff) shouldShowDiff='true' ;;
+			-f | --force) shouldForceRun='true' ;;
+			-h | --help)
+				showHelp
+				exit
+				;;
+			-v | --verbose) verbosity=1 ;;
+			-V | --version)
+				echo "${versionString}"
+				exit
+				;;
+			*)
+				echo "Error: unrecognized argument '$1'. Use --help to show usage." >&2
+				exit 1
+				;;
 		esac
 
 		shift
@@ -83,7 +92,7 @@ main() {
 		exit 1
 	fi
 
-	if (( verbosity > 0 )); then
+	if ((verbosity > 0)); then
 		echo "Install root is ${installRoot}"
 	fi
 
@@ -106,7 +115,7 @@ main() {
 			fi
 		done
 
-		if (( ${#conflicts[@]} > 0 )); then
+		if ((${#conflicts[@]} > 0)); then
 			echo ''
 			echo 'CONFLICTING FILES:'
 			echo '=================='
@@ -131,7 +140,7 @@ main() {
 		fi
 
 		# Verbose flag still prints files that are linked
-		if (( verbosity > 0 )); then
+		if ((verbosity > 0)); then
 			printf 'linking %s => %s\n' "${file}" "${installRoot}/${file}"
 		fi
 

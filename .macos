@@ -13,7 +13,7 @@ defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int
 
 # Stop iTunes from opening when F8 or media keys are pressed
 # Change `unload` to `load` to re-enable
-launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null
+launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2>/dev/null
 
 ###############################################################################
 # Screen                                                                      #
@@ -81,7 +81,7 @@ defaults write com.apple.dock autohide-delay -float 0
 ###############################################################################
 
 # Set up keyboard shortcuts for Spectacle
-cp -r settings/spectacle.json ~/Library/Application\ Support/Spectacle/Shortcuts.json 2> /dev/null
+cp -r settings/spectacle.json ~/Library/Application\ Support/Spectacle/Shortcuts.json 2>/dev/null
 
 ###############################################################################
 # Cleanup                                                                     #
