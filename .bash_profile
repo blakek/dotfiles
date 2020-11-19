@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # If a file exists and is not empty, source it. Otherwise, return an falsy value
 import() {
 	[ -r "$1" ] && source "$1"
