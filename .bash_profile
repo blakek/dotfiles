@@ -3,23 +3,29 @@ import() {
 	[ -r "$1" ] && source "$1"
 }
 
-# Return truthy/falsy value indicating if every argument is installed
-# (i.e. found in hash lookup)
-isInstalled() {
-	hash "$@" 2>/dev/null
-}
-
 # Import aliases & functions
-import "${HOME}/.bash_aliases"
 import "${HOME}/.bash_functions"
+import "${HOME}/.bash_aliases"
 
 # Set global environment variables and secrets
 set -o allexport
 import "${HOME}/.env"
 set +o allexport
 
+declare -ar pathAdditions=(
+	# MySQL client
+	"/usr/local/opt/mysql-client/bin"
+	# Directory-specific node_modules
+	"node_modules/.bin"
+	# Rust binaries
+	"${HOME}/.cargo/bin"
+	# Go binaries
+	"${HOME}/go/bin"
+	# My personal scripts
+	"${HOME}/bin"
+)
+
 # Add my personal programs to PATH
-export PATH="${HOME}/bin:${PATH}"
 export BKLIB="${HOME}/bin/lib"
 import "${BKLIB}/mylog.sh"
 
@@ -54,9 +60,6 @@ if isInstalled brew; then
 else
 	import "${HOME}/.git-completion.bash"
 fi
-
-# Add directory-specific node_modules to PATH
-export PATH="node_modules/.bin:${PATH}"
 
 # Enable colors in macOS cli commands
 export CLICOLOR=1
@@ -95,11 +98,12 @@ source "${HOME}/.bash_prompt" && {
 if [ -d "${HOME}/Library/Android/sdk" ]; then
 	export ANDROID_HOME="${HOME}/Library/Android/sdk"
 	export ANDROID_SDK="${ANDROID_HOME}"
-	export PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
+	PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
 fi
 
-# Add Rust binaries to PATH
-export PATH="${PATH}:${HOME}/.cargo/bin"
+PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
+
+export PATH
 
 # Always start on a good note
 true
