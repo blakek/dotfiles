@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 
 ##
+# Test if an element exists in an array.
+##
+arrayIncludes() {
+	local -n array="$1"
+	local search="$2"
+
+	for element in "${array[@]}"; do
+		if [[ ${element} == "${search}" ]]; then
+			return
+		fi
+	done
+
+	false
+}
+
+##
 # Join a bash array using a delimiter (any string)
 ##
 arrayJoin() {
