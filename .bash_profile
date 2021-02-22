@@ -23,6 +23,9 @@ declare -ar pathAdditions=(
 	"${HOME}/.cargo/bin"
 	# Go binaries
 	"${HOME}/go/bin"
+	# Yarn global commands
+	"${HOME}/.yarn/bin"
+	"${HOME}/.config/yarn/global/node_modules/.bin"
 	# My personal scripts
 	"${HOME}/bin"
 )
