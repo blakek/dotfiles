@@ -39,6 +39,8 @@ import "${BKLIB}/mylog.sh"
 
 # I don't know how to use emacs
 export EDITOR='vim'
+# …but I do want emacs-style line-editing
+set -o emacs
 
 # Shell options
 #   autocd        `cd` into directories without typing `cd` (Bash 4+)
