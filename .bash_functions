@@ -48,8 +48,14 @@ dataurl() {
 ##
 # Git diff with diff-so-fancy
 ##
-isInstalled diff-so-fancy && gdf() {
-	git diff --color "$@" | diff-so-fancy | less -R
+gdf() {
+	if isInstalled delta; then
+		git diff
+	elif isInstalled diff-so-fancy; then
+		git diff --color "$@" | diff-so-fancy | less -R
+	else
+		git diff
+	fi
 }
 
 ##

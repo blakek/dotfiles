@@ -40,6 +40,10 @@ untrackedCache = true
 [commit]
 template = ~/.git-commit-template
 
+[delta]
+line-numbers = true
+side-by-side = true
+
 [diff]
 # Detect copies as well as renames
 renames = copies
@@ -78,6 +82,12 @@ user = blakek
 [mergetool "sourcetree"]
 cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 trustExitCode = true
+
+[pager]
+diff = delta
+log = delta
+reflog = delta
+show = delta
 
 [pull]
 rebase = false
