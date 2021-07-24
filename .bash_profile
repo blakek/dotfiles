@@ -2,6 +2,7 @@
 
 # If a file exists and is not empty, source it. Otherwise, return an falsy value
 import() {
+	# shellcheck disable=SC1090
 	[ -r "$1" ] && source "$1"
 }
 
@@ -75,13 +76,14 @@ export CLICOLOR=1
 bind Space:magic-space
 
 # Add a little color to man
-export LESS_TERMCAP_mb=$(printf '\e[32m')
-export LESS_TERMCAP_md=$(printf '\e[32m')
-export LESS_TERMCAP_me=$(printf '\e[0m')
-export LESS_TERMCAP_se=$(printf '\e[0m')
-export LESS_TERMCAP_so=$(printf '\e[1;44;37m')
-export LESS_TERMCAP_ue=$(printf '\e[0m')
-export LESS_TERMCAP_us=$(printf '\e[34m')
+LESS_TERMCAP_mb=$(printf '\e[32m')
+LESS_TERMCAP_md=$(printf '\e[32m')
+LESS_TERMCAP_me=$(printf '\e[0m')
+LESS_TERMCAP_se=$(printf '\e[0m')
+LESS_TERMCAP_so=$(printf '\e[1;44;37m')
+LESS_TERMCAP_ue=$(printf '\e[0m')
+LESS_TERMCAP_us=$(printf '\e[34m')
+export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
 
 # git prompt settings
 import "${HOME}/.git-prompt.sh" && {
@@ -95,10 +97,10 @@ import "${HOME}/.git-prompt.sh" && {
 # Symlink a prompt from ./prompts/* to ~/.bash_prompt to get started
 source "${HOME}/.bash_prompt" && {
 	setPromptCommand
-	export primaryColor=$e_white
-	export errorColor=$e_light_red
-	export secondaryColor=$e_light_cyan
-	export repoColor=$e_light_green
+	export primaryColor=${e_white:=}
+	export errorColor=${e_light_red:=}
+	export secondaryColor=${e_light_cyan:=}
+	export repoColor=${e_light_green:=}
 }
 
 # Android stuff
