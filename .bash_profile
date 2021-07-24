@@ -33,9 +33,9 @@ declare -ar pathAdditions=(
 	"node_modules/.bin"
 )
 
-# Add my personal programs to PATH
-export BKLIB="${HOME}/bin/lib"
-import "${BKLIB}/mylog.sh"
+# Import some pretty-printing helpers
+cwd="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)"
+import "${cwd}/bin/lib/mylog.sh"
 
 # I don't know how to use emacs
 export EDITOR='vim'
