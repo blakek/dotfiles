@@ -1,5 +1,7 @@
 # Global Git options
 # For documentation, see https://git-scm.com/docs/git-config
+[alias]
+undo-commit = reset --soft HEAD~1
 
 [color]
 # Use colors in Git commands that are capable of colored output when
