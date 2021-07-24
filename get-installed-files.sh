@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-__dirname="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Save applications installed with Homebrew
 brew bundle dump --all --describe --force
 
