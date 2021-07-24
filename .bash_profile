@@ -15,10 +15,8 @@ import "${HOME}/.env"
 set +o allexport
 
 declare -ar pathAdditions=(
-	# MySQL client
-	"/usr/local/opt/mysql-client/bin"
-	# Directory-specific node_modules
-	"node_modules/.bin"
+	# My personal scripts
+	"${HOME}/bin"
 	# Rust binaries
 	"${HOME}/.cargo/bin"
 	# Go binaries
@@ -26,8 +24,12 @@ declare -ar pathAdditions=(
 	# Yarn global commands
 	"${HOME}/.yarn/bin"
 	"${HOME}/.config/yarn/global/node_modules/.bin"
-	# My personal scripts
-	"${HOME}/bin"
+	# Homebrew Python
+	"/usr/local/opt/python/libexec/bin"
+	# MySQL client
+	"/usr/local/opt/mysql-client/bin"
+	# Directory-specific node_modules
+	"node_modules/.bin"
 )
 
 # Add my personal programs to PATH
