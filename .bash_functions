@@ -135,6 +135,21 @@ github() {
 }
 
 ##
+# Prints and copies external IP address
+##
+myip() {
+	ip="$(curl --silent api.ipify.org)"
+
+	if isInstalled clipboard; then
+		echo "$ip" | tee /dev/tty | clipboard
+	elif isInstalled pbcopy; then
+		echo "$ip" | tee /dev/tty | pbcopy
+	else
+		echo "$ip"
+	fi
+}
+
+##
 # `o` with no arguments opens the current directory, otherwise opens the given
 # location
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
