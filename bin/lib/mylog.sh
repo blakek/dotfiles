@@ -1,4 +1,7 @@
-source "$BKLIB/colors.sh"
+#!/usr/bin/env bash
+
+cwd="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${cwd}/colors.sh"
 
 pheader() {
 	printf "\n$underline$@$reset\n"
