@@ -54,6 +54,7 @@ alias gl='git log'
 alias glg='git log --graph --decorate --oneline --color | less -R'
 alias gp='git pull --prune'
 alias gs='git status'
+
 # Rsync with defaults to only rely on checksums
 alias rcp='rsync --archive --compress --checksum --human-readable --no-times --progress'
 _rcp() {
