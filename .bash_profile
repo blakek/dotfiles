@@ -58,19 +58,6 @@ export HISTCONTROL='ignoreboth'
 # List of history commands to ignore
 export HISTIGNORE='exit'
 
-# bash completion
-if isInstalled brew; then
-	# Use bash-completion@2 if installed; fallback to v1
-	if [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]]; then
-		export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
-		import "$(brew --prefix)/etc/profile.d/bash_completion.sh"
-	else
-		import "$(brew --prefix)/etc/bash_completion"
-	fi
-else
-	import "${HOME}/.git-completion.bash"
-fi
-
 # Enable colors in macOS cli commands
 export CLICOLOR=1
 
@@ -105,6 +92,10 @@ source "${HOME}/.bash_prompt" && {
 	export repoColor=${e_light_green:=}
 }
 
+# Export PATH additions
+PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
+export PATH
+
 # Android stuff
 if [ -d "${HOME}/Library/Android/sdk" ]; then
 	export ANDROID_HOME="${HOME}/Library/Android/sdk"
@@ -112,9 +103,16 @@ if [ -d "${HOME}/Library/Android/sdk" ]; then
 	PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
 fi
 
-PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
-
-export PATH
-
-# Always start on a good note
-true
+# bash completion
+# NOTE: this needs to come after the PATH additions
+if isInstalled brew; then
+	# Use bash-completion@2 if installed; fallback to v1
+	if [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]]; then
+		export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+		import "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+	else
+		import "$(brew --prefix)/etc/bash_completion"
+	fi
+else
+	import "${HOME}/.git-completion.bash"
+fi
