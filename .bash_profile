@@ -74,6 +74,16 @@ LESS_TERMCAP_ue=$(printf '\e[0m')
 LESS_TERMCAP_us=$(printf '\e[34m')
 export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
 
+# Homebrew stuff
+if [ -x /opt/homebrew/bin/brew ]; then
+	export HOMEBREW_PREFIX="/opt/homebrew"
+	export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+	export HOMEBREW_REPOSITORY="/opt/homebrew"
+	export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}"
+	export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:"
+	export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
+fi
+
 # git prompt settings
 import "${HOME}/.git-prompt.sh" && {
 	export GIT_PS1_SHOWDIRTYSTATE='yes'
