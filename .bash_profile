@@ -106,13 +106,6 @@ source "${HOME}/.bash_prompt" && {
 PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
 export PATH
 
-# Android stuff
-if [ -d "${HOME}/Library/Android/sdk" ]; then
-	export ANDROID_HOME="${HOME}/Library/Android/sdk"
-	export ANDROID_SDK="${ANDROID_HOME}"
-	PATH="${PATH}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools"
-fi
-
 # bash completion
 # NOTE: this needs to come after the PATH additions
 if isInstalled brew; then
