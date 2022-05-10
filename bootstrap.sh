@@ -136,7 +136,7 @@ main() {
 		# Dry run just prints files that would be linked
 		if $isDryRun; then
 			printf 'would link %s => %s\n' "${file}" "${installRoot}/${file}"
-			exit 0
+			continue
 		fi
 
 		# Verbose flag still prints files that are linked
