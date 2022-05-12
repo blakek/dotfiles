@@ -196,11 +196,3 @@ shrug() {
 isInstalled tree && tre() {
 	tree -aC -I '.git|.next|node_modules|bower_components' --dirsfirst "$@" | less -FRX
 }
-
-##
-# Add shortcut for starting the Android Emulator with a list of devices
-##
-isInstalled emulator && android-emulator() {
-	local device=$(emulator -list-avds | ipt)
-	emulator -avd "${device}" -no-boot-anim -ranchu $@ &
-}
