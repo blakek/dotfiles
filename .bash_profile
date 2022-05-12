@@ -69,14 +69,6 @@ LESS_TERMCAP_ue=$(printf '\e[0m')
 LESS_TERMCAP_us=$(printf '\e[34m')
 export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
 
-# git prompt settings
-import "${HOME}/.git-prompt.sh" && {
-	export GIT_PS1_SHOWDIRTYSTATE='yes'
-	export GIT_PS1_SHOWUNTRACKEDFILES='yes'
-	export GIT_PS1_SHOWSTASHSTATE='yes'
-	export GIT_PS1_SHOWUPSTREAM='auto'
-}
-
 # Export PATH additions
 PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
 export PATH

@@ -3,6 +3,17 @@
 # ☯︎ ✳︎ ⌘ ⌥ ﹠
 # ⚡︎ ƒ ⍺ ß ⌬
 
+if ! import "${HOME}/.git-prompt.sh"; then
+	notifySkipped '~/.git-prompt.sh not found'
+	return
+fi
+
+# git prompt settings
+export GIT_PS1_SHOWDIRTYSTATE='yes'
+export GIT_PS1_SHOWUNTRACKEDFILES='yes'
+export GIT_PS1_SHOWSTASHSTATE='yes'
+export GIT_PS1_SHOWUPSTREAM='auto'
+
 promptCommand() {
 	local lastReturn="$?" # Must go first!
 
@@ -27,3 +38,5 @@ promptCommand() {
 }
 
 PROMPT_COMMAND='promptCommand'
+
+notifyLoaded
