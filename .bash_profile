@@ -86,13 +86,3 @@ export PATH
 for file in "${HOME}/.bash_profile_extentions"/{*,.[!.]*}; do
 	import "${file}"
 done
-
-# My prompt
-# Symlink a prompt from ./prompts/* to ~/.bash_prompt to get started
-source "${HOME}/.bash_prompt" && {
-	setPromptCommand
-	export primaryColor=${e_white:=}
-	export errorColor=${e_light_red:=}
-	export secondaryColor=${e_light_cyan:=}
-	export repoColor=${e_light_green:=}
-}
