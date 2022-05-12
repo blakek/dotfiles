@@ -16,7 +16,7 @@ purple='\e[0;35m'
 light_purple='\e[1;35m'
 brown='\e[0;33m'
 yellow='\e[1;33m'
-gray='\e[0;30m'
+gray='\e[1;30m'
 light_gray='\e[0;37m'
 
 # Formats
