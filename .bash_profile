@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Set `VERBOSITY` to show debug messages in imported scripts
+# VERBOSITY="1"
+
 # If a file exists and is not empty, source it. Otherwise, return an falsy value
 import() {
 	# shellcheck disable=SC1090
@@ -25,17 +28,9 @@ declare -ar pathAdditions=(
 	# Yarn global commands
 	"${HOME}/.yarn/bin"
 	"${HOME}/.config/yarn/global/node_modules/.bin"
-	# Homebrew Python
-	"/usr/local/opt/python/libexec/bin"
-	# MySQL client
-	"/usr/local/opt/mysql-client/bin"
 	# Directory-specific node_modules
 	"node_modules/.bin"
 )
-
-# Import some pretty-printing helpers
-cwd="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)"
-import "${cwd}/bin/lib/mylog.sh"
 
 # I don't know how to use emacs
 export EDITOR='vim'
@@ -74,16 +69,6 @@ LESS_TERMCAP_ue=$(printf '\e[0m')
 LESS_TERMCAP_us=$(printf '\e[34m')
 export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
 
-# Homebrew stuff
-if [ -x /opt/homebrew/bin/brew ]; then
-	export HOMEBREW_PREFIX="/opt/homebrew"
-	export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
-	export HOMEBREW_REPOSITORY="/opt/homebrew"
-	export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}"
-	export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:"
-	export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
-fi
-
 # git prompt settings
 import "${HOME}/.git-prompt.sh" && {
 	export GIT_PS1_SHOWDIRTYSTATE='yes'
@@ -91,6 +76,16 @@ import "${HOME}/.git-prompt.sh" && {
 	export GIT_PS1_SHOWSTASHSTATE='yes'
 	export GIT_PS1_SHOWUPSTREAM='auto'
 }
+
+# Export PATH additions
+PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
+export PATH
+
+# Allow one-off settings to be set per-machine
+# NOTE: `{*,.[!.]*}` matches all files in the current directory and loads hidden files **last**
+for file in "${HOME}/.bash_profile_extentions"/{*,.[!.]*}; do
+	import "${file}"
+done
 
 # My prompt
 # Symlink a prompt from ./prompts/* to ~/.bash_prompt to get started
@@ -101,23 +96,3 @@ source "${HOME}/.bash_prompt" && {
 	export secondaryColor=${e_light_cyan:=}
 	export repoColor=${e_light_green:=}
 }
-
-# Export PATH additions
-PATH="$(arrayJoin ':' "${pathAdditions[@]}"):${PATH}"
-export PATH
-
-# bash completion
-# NOTE: this needs to come after the PATH additions
-if isInstalled brew; then
-	brewPrefix="$(brew --prefix)"
-
-	# Use bash-completion@2 if installed; fallback to v1
-	if [[ -r "${brewPrefix}/etc/profile.d/bash_completion.sh" ]]; then
-		export BASH_COMPLETION_COMPAT_DIR="${brewPrefix}/etc/bash_completion.d"
-		import "${brewPrefix}/etc/profile.d/bash_completion.sh"
-	else
-		import "${brewPrefix}/etc/bash_completion"
-	fi
-else
-	import "${HOME}/.git-completion.bash"
-fi

@@ -25,17 +25,19 @@ italic='\e[3m'
 underline='\e[4m'
 strikethrough='\e[9m'
 
-e_bold='\[\e[0;1m\]'
-e_italic='\[\e[0;3m\]'
-e_underline='\[\e[0;4m\]'
-e_strikethrough='\[\e[0;9m\]'
-
 ##
 # For use in variables (e.g. $PS1)
 ##
 
 # Reset
 e_reset='\[\e[0m\]'
+
+# Formats
+e_default='\[\e[1;39m\]'
+e_bold='\[\e[0;1m\]'
+e_italic='\[\e[0;3m\]'
+e_underline='\[\e[0;4m\]'
+e_strikethrough='\[\e[0;9m\]'
 
 # Foreground colors
 e_black='\[\e[0;30m\]'
@@ -54,11 +56,8 @@ e_cyan='\[\e[0;36m\]'
 e_light_cyan='\[\e[1;36m\]'
 e_light_gray='\[\e[1;37m\]'
 e_white='\[\e[0;37m\]'
-e_default='\[\e[39m\]'
 
 # Background colors
-e_default='\[\e[1;39m\]'
-
 e_bg_black='\[\e[40m\]'
 e_bg_red='\[\e[41m\]'
 e_bg_green='\[\e[42m\]'
@@ -76,9 +75,3 @@ e_bg_light_magenta='\[\e[105m\]'
 e_bg_light_cyan='\[\e[106m\]'
 e_bg_white='\[\e[107m\]'
 e_bg_default='\[\e[49m\]'
-
-# Formats
-e_bold='\[\e[1m\]'
-e_italic='\[\e[3m\]'
-e_underline='\[\e[4m\]'
-e_strikethrough='\[\e[9m\]'
