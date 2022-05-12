@@ -1,6 +1,6 @@
 # Fun prompt symbols:
-# ❯ ▲ ➤ ➥ $
-# % ☯︎ ✳︎ ⌘ ⌥
+# ❯ ▲ ➤ ➥ $ %
+# ☯︎ ✳︎ ⌘ ⌥ ﹠
 # ⚡︎ ƒ ⍺ ß ⌬
 
 promptCommand() {
