@@ -4,7 +4,7 @@
 # ⚡︎ ƒ ⍺ ß ⌬
 
 if ! import "${HOME}/.git-prompt.sh"; then
-	notifySkipped '~/.git-prompt.sh not found'
+	notifySkipped "${HOME}/.git-prompt.sh not found"
 	return
 fi
 
