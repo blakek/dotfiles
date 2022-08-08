@@ -46,7 +46,7 @@ isInstalled pv && backup() {
 			Usage:
 			    backup [options] <file ...>
 			Options:
-			    -b, --bzip2     compress files using BZip2 compression (default)
+			    -b, --bzip2    compress files using BZip2 compression (default)
 			    -g, --gzip     compress files using GZip compression
 			    -h, --help     output usage information and exit
 			    -V, --version  output the version number and exit
