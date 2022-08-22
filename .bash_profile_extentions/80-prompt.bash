@@ -17,6 +17,11 @@ export GIT_PS1_SHOWUPSTREAM='auto'
 promptCommand() {
 	local lastReturn="$?" # Must go first!
 
+	# HACK: VSCode takes over `$?`. Use their saved status code instead.
+	if [[ $TERM_PROGRAM == "vscode" ]]; then
+		lastReturn="${__vsc_status:-0}"
+	fi
+
 	local directoryColor="${PS1_DIRECTORY_COLOR:-$e_light_cyan}"
 
 	local repoColor="${PS1_REPO_COLOR:-$e_light_green}"
