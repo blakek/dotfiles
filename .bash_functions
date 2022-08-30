@@ -112,6 +112,20 @@ dataurl() {
 	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
 }
 
+dnsinfo() {
+	local domain="$1"
+	shift
+
+	local -a defaultRecords=('A' 'AAAA' 'CNAME' 'MX' 'SOA' 'TXT')
+	local -a recordsRequests=()
+
+	for record in "${@:-"${defaultRecords[@]}"}"; do
+		recordsRequests+=("${domain}" "${record}")
+	done
+
+	dig +noall +answer +multiline "${recordsRequests[@]}"
+}
+
 ##
 # Git diff with diff-so-fancy
 ##
