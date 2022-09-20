@@ -11,6 +11,6 @@ import() {
 
 # Load in extensions…
 # NOTE: `{*,.[!.]*}` matches all files in the current directory and loads hidden files **last**
-for file in "${HOME}/.bash_profile_extentions"/{*,.[!.]*}; do
+for file in "${HOME}/.bash_profile_extensions"/{*,.[!.]*}; do
 	import "${file}"
 done

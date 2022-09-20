@@ -14,4 +14,4 @@ Thumbs.db
 .Trashes
 
 # Hidden config files won't be added to this repo
-.bash_profile_extentions/.*
+.bash_profile_extensions/.*

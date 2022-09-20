@@ -44,4 +44,6 @@ promptCommand() {
 
 PROMPT_COMMAND='promptCommand'
 
+# import "${HOME}/dev/dotfiles/wip-prompt.bash"
+
 notifyLoaded
