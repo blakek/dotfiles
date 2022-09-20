@@ -89,6 +89,9 @@ required = true
 [github]
 user = blakek
 
+[init]
+defaultBranch = main
+
 [mergetool "sourcetree"]
 cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 trustExitCode = true
