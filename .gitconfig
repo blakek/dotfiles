@@ -4,6 +4,11 @@
 ##
 
 [alias]
+lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(auto)%d%C(reset) %C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an, %ar%C(reset)'
+lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+log-simple = log --format=format:'%B'
+log-understandable = log --format=format:'%C(bold)%cr, %cN (%cE) created commit %h:%n%C(reset)%B%n'
 undo-commit = reset --soft HEAD~1
 
 [color]
