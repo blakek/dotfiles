@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [[ ${VERBOSITY:-} == '' ]]; then
 	notifyLoaded() { return; }
 	notifySkipped() { return; }
@@ -32,6 +34,10 @@ notifyWarn() {
 	moduleName="$(basename "$(caller | awk '{print $2}')" .bash)"
 
 	printf '%b⚠ %s warning:%b %s\n' "$yellow" "$moduleName" "$reset" "$message"
+}
+
+[[ ${BASH_VERSINFO[0]} -lt 4 ]] && {
+	notifyWarn "Bash version is less than 4.0.0. Some features may not work."
 }
 
 notifyLoaded

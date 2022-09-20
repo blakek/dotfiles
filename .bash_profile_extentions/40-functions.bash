@@ -197,3 +197,5 @@ shrug() {
 isInstalled tree && tre() {
 	tree -aC -I '.git|.next|node_modules|bower_components' --dirsfirst "$@" | less -FRX
 }
+
+notifyLoaded
