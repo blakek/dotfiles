@@ -45,10 +45,8 @@ fileIsConflict() {
 		return 1
 	fi
 
-	output="$(diff "$src" "$dest")"
-
 	# File exists but has the same contents
-	if (($? == 0)); then
+	if output="$(diff "$src" "$dest")"; then
 		return 1
 	fi
 
