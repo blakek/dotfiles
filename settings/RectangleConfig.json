@@ -65,10 +65,13 @@
       "float" : 0
     },
     "hideMenubarIcon" : {
-      "bool" : false
+      "bool" : true
     },
     "ignoredSnapAreas" : {
       "int" : 0
+    },
+    "landscapeSnapAreas" : {
+
     },
     "launchOnLogin" : {
       "bool" : true
@@ -78,6 +81,9 @@
     },
     "minimumWindowWidth" : {
       "float" : 0
+    },
+    "missionControlDragging" : {
+      "int" : 0
     },
     "moveCursor" : {
       "int" : 0
@@ -90,6 +96,9 @@
     },
     "obtainWindowOnClick" : {
       "int" : 0
+    },
+    "portraitSnapAreas" : {
+
     },
     "relaunchOpensMenu" : {
       "bool" : false
@@ -145,11 +154,14 @@
     "specifiedWidth" : {
       "float" : 1680
     },
+    "stageSize" : {
+      "float" : 190
+    },
     "subsequentExecutionMode" : {
       "int" : 0
     },
     "SUEnableAutomaticChecks" : {
-      "bool" : false
+      "bool" : true
     },
     "todo" : {
       "int" : 1
@@ -170,7 +182,7 @@
       "int" : 0
     },
     "windowSnapping" : {
-      "int" : 0
+      "int" : 2
     }
   },
   "shortcuts" : {
@@ -215,5 +227,5 @@
       "modifierFlags" : 786432
     }
   },
-  "version" : "62"
+  "version" : "65"
 }
