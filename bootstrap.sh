@@ -96,8 +96,8 @@ main() {
 
 	# Make list of files to install
 	local files=(
-		'bin/*'
-		'.bash_*'
+		bin/*
+		.bash_*
 		'.gitconfig'
 		'.gitignore'
 		'.tmux.conf'
@@ -107,9 +107,9 @@ main() {
 
 	if ! $shouldForceRun; then
 		# Check for possible conflicts
-		for file in ${files[@]}; do
+		for file in "${files[@]}"; do
 			if fileIsConflict "$file"; then
-				conflicts+=($file)
+				conflicts+=("$file")
 			fi
 		done
 
@@ -118,7 +118,7 @@ main() {
 			echo 'CONFLICTING FILES:'
 			echo '=================='
 
-			for file in ${conflicts[@]}; do
+			for file in "${conflicts[@]}"; do
 				echo "  - $file"
 			done
 
@@ -130,7 +130,7 @@ main() {
 	# Make necessary directories for install
 	mkdir -p "${installRoot}/bin"
 
-	for file in ${files[@]}; do
+	for file in "${files[@]}"; do
 		# Dry run just prints files that would be linked
 		if $isDryRun; then
 			printf 'would link %s => %s\n' "${file}" "${installRoot}/${file}"
