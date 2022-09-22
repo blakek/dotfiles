@@ -1,6 +1,12 @@
-export HOMEBREW_PREFIX="$(brew --prefix)"
+export HOMEBREW_PREFIX=""
 
-if ! [ -x "${HOMEBREW_PREFIX}/bin/brew" ]; then
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+	HOMEBREW_PREFIX="/opt/homebrew"
+elif [[ -x "/usr/local/bin/brew" ]]; then
+	HOMEBREW_PREFIX="/usr/local"
+elif [[ -x "$(type -P brew)" ]]; then
+	HOMEBREW_PREFIX="$(brew --prefix)"
+else
 	notifySkipped 'homebrew directory not found'
 	return
 fi
