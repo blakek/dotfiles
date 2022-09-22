@@ -1,4 +1,4 @@
-export HOMEBREW_PREFIX="/opt/homebrew"
+export HOMEBREW_PREFIX="$(brew --prefix)"
 
 if ! [ -x "${HOMEBREW_PREFIX}/bin/brew" ]; then
 	notifySkipped 'homebrew directory not found'
