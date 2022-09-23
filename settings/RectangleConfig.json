@@ -71,7 +71,7 @@
       "int" : 0
     },
     "landscapeSnapAreas" : {
-
+      "string" : "[5,{\"action\":1},2,{\"action\":2},4,{\"action\":0},7,{\"compound\":-4}]"
     },
     "launchOnLogin" : {
       "bool" : true
@@ -83,7 +83,7 @@
       "float" : 0
     },
     "missionControlDragging" : {
-      "int" : 0
+      "int" : 1
     },
     "moveCursor" : {
       "int" : 0
@@ -186,6 +186,10 @@
     }
   },
   "shortcuts" : {
+    "almostMaximize" : {
+      "keyCode" : 36,
+      "modifierFlags" : 1966080
+    },
     "center" : {
       "keyCode" : 8,
       "modifierFlags" : 1835008
