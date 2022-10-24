@@ -10,6 +10,8 @@ declare -a pathAdditions=(
 	# Yarn global commands
 	"${HOME}/.yarn/bin"
 	"${HOME}/.config/yarn/global/node_modules/.bin"
+	# Deno binaries
+	"${HOME}/.deno/bin"
 	# Directory-specific node_modules
 	"node_modules/.bin"
 )
