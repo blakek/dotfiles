@@ -9,8 +9,7 @@ import() {
 	[ -r "$1" ] && source "$1"
 }
 
-# Load in extensions…
-# NOTE: `{*,.[!.]*}` matches all files in the current directory and loads hidden files **last**
-for file in "${HOME}/.bash_profile_extensions"/{*,.[!.]*}; do
+# Load in extensions in a natural sort order
+for file in $(find -L "${HOME}/.bash_profile_extensions" | sort -d); do
 	import "${file}"
 done
