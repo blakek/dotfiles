@@ -4,12 +4,18 @@
 ##
 
 [alias]
+find = grep --extended-regexp --line-number --ignore-case --untracked --full-name
 lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
 lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(auto)%d%C(reset) %C(bold blue)%h%C(reset) %C(white)%s%C(reset) %C(dim white)- %an, %ar%C(reset)'
 lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
 log-simple = log --format=format:'%B'
 log-understandable = log --format=format:'%C(bold)%cr, %cN (%cE) created commit %h:%n%C(reset)%B%n'
 undo-commit = reset --soft HEAD~1
+# catchup = !git stash && git switch $1 && git pull && git switch - && git rebase $1 && git stash pop
+
+# [branch]
+# # `git pull` will rebase instead of merging; see also pull.rebase
+# autosetuprebase = always
 
 [color]
 # Use colors in Git commands that are capable of colored output when
@@ -37,7 +43,7 @@ whitespace = red reverse # whitespace errors
 
 [core]
 # Global .gitignore file
-excludesfile = ~/.gitignore
+excludesfile = /Users/blakek/.gitignore
 
 # Make `git rebase` safer on macOS
 # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
@@ -93,7 +99,7 @@ user = blakek
 defaultBranch = main
 
 [mergetool "sourcetree"]
-cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 trustExitCode = true
 
 [pager]
@@ -104,6 +110,8 @@ show = delta
 
 [pull]
 rebase = false
+# # `git pull` will rebase instead of merging; see also branch.autosetuprebase
+# rebase = true
 
 [push]
 # https://git-scm.com/docs/git-config#git-config-pushdefault
@@ -112,4 +120,4 @@ default = current
 
 [user]
 name = Blake Knight
-email = oss.ideas@gmail.com
+email = blake.knight@zapier.com

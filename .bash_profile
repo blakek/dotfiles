@@ -10,6 +10,6 @@ import() {
 }
 
 # Load in extensions in a natural sort order
-for file in $(find -L "${HOME}/.bash_profile_extensions" | sort -d); do
+for file in $(find -L "${HOME}/.bash_profile_extensions" -type f | sort -d); do
 	import "${file}"
 done
