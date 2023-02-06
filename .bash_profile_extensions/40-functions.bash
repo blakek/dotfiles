@@ -36,7 +36,7 @@ arrayJoin() {
 ##
 # Backups up a directory with progress
 ##
-isInstalled pv && backup() {
+backup() {
 	local -a files
 	local compressionType="bzip2"
 
@@ -51,7 +51,7 @@ isInstalled pv && backup() {
 			    -h, --help     output usage information and exit
 			    -V, --version  output the version number and exit
 			Positional arguments:
-			    files     example list of files for positional argument
+			    files      list of files/directories to backup
 		END
 	}
 
@@ -72,7 +72,7 @@ isInstalled pv && backup() {
 				;;
 
 			-V | --version)
-				echo "1.0.0"
+				echo "1.1.0"
 				return
 				;;
 
@@ -94,9 +94,14 @@ isInstalled pv && backup() {
 		outputName="${directoryName}.tar.bz2"
 		[[ $compressionType == "gzip" ]] && outputName="${directoryName}.tar.gz"
 
-		tar -C "$parentDirectory" -cf - "$directoryName" |
-			pv -s "$directorySize" |
-			$compressionType >"$outputName"
+		if isInstalled pv; then
+			tar -C "$parentDirectory" -cf - "$directoryName" |
+				pv -s "$directorySize" |
+				$compressionType >"$outputName"
+		else
+			echo "Note: Install pv to see live progress."
+			tar -C "$parentDirectory" -cf "$compressionType" "$directoryName" >"$outputName"
+		fi
 	done
 }
 
