@@ -193,6 +193,37 @@ shrug() {
 }
 
 ##
+# Prints which process is using the given port
+##
+whyPortUsed() {
+	local port="${1?Missing port}"
+	# Using `netstat` instead of `lsof` because it's faster
+	processID=$(
+		netstat -van |
+			# Find the line with the port
+			grep -E "${port}.*LISTEN" |
+			# Get the process ID
+			awk '{ print $9 }'
+	)
+
+	if [[ $processID == '' ]]; then
+		echo "Port ${port} doesn't seem to be used"
+		return
+	fi
+
+	processNameAndArgs=$(ps -p "$processID" -o comm=,args=)
+
+	echo "${processID}: ${processNameAndArgs}"
+
+	# Prompt to kill the process
+	read -p "Kill process? [y/N] " -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
+		kill "$processID"
+	fi
+}
+
+##
 # `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
 # the `.git` directory, listing directories first. The output gets piped into
 # `less` with options to preserve color and line numbers, unless the output is
