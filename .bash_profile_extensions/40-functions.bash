@@ -141,6 +141,23 @@ github() {
 }
 
 ##
+# Converts HTML to Markdown
+##
+html2md() {
+	pandoc -f html -t gfm-raw_html -
+}
+
+##
+# Curl + pandoc browser
+##
+mdbrowser() {
+	local -r url="$1"
+	shift
+
+	curl -Ls "$url" | html2md | npx mdless
+}
+
+##
 # Prints and copies external IP address
 ##
 myip() {
