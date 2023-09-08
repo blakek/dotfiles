@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# The root directory of the dotfiles repository
+DOTFILES_ROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
 # Set `VERBOSITY` to show debug messages in imported scripts
 # VERBOSITY="1"
 
@@ -13,8 +16,8 @@ import() {
 for file in $(find -L "${HOME}/.bash_profile_extensions" -type f | sort -d); do
 	# Track start time if `VERBOSITY` is set
 	if [[ ${VERBOSITY-} != '' ]]; then
-		export BK_DEBUG_IMPORT_TIME_START
-		BK_DEBUG_IMPORT_TIME_START=$(msec)
+		export DOTFILES_IMPORT_TIME_START
+		DOTFILES_IMPORT_TIME_START=$("${DOTFILES_ROOT}/helpers/msec/msec")
 	fi
 
 	import "${file}"

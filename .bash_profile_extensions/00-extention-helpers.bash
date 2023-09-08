@@ -28,7 +28,7 @@ _printLoadTime() {
 notifyLoaded() {
 	local moduleName
 	moduleName="$(basename "$(caller | awk '{print $2}')")"
-	loadTime="$(_printLoadTime "$BK_DEBUG_IMPORT_TIME_START")"
+	loadTime="$(_printLoadTime "$DOTFILES_IMPORT_TIME_START")"
 
 	printf '%b✔%b %s loaded %s\n' "$green" "$reset" "$moduleName" "$loadTime"
 }
@@ -38,7 +38,7 @@ notifySkipped() {
 
 	local moduleName
 	moduleName="$(basename "$(caller | awk '{print $2}')")"
-	loadTime="$(_printLoadTime "$BK_DEBUG_IMPORT_TIME_START")"
+	loadTime="$(_printLoadTime "$DOTFILES_IMPORT_TIME_START")"
 
 	if [[ ${reason-} != '' ]]; then
 		printf '%b⚠ %s skipped:%b %s %s\n' "$yellow" "$moduleName" "$reset" "$reason" "$loadTime"
