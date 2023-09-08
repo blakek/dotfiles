@@ -11,5 +11,11 @@ import() {
 
 # Load in extensions in a natural sort order
 for file in $(find -L "${HOME}/.bash_profile_extensions" -type f | sort -d); do
+	# Track start time if `VERBOSITY` is set
+	if [[ ${VERBOSITY-} != '' ]]; then
+		export BK_DEBUG_IMPORT_TIME_START
+		BK_DEBUG_IMPORT_TIME_START=$(msec)
+	fi
+
 	import "${file}"
 done

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ ${VERBOSITY:-} == '' ]]; then
+if [[ ${VERBOSITY-} == '' ]]; then
 	notifyLoaded() { return; }
 	notifySkipped() { return; }
 	notifyWarn() { return; }
@@ -8,22 +8,42 @@ if [[ ${VERBOSITY:-} == '' ]]; then
 	return
 fi
 
+_printLoadTime() {
+	local startTime="$1"
+	local endTime
+	endTime=$(msec)
+
+	local loadTime=$((endTime - startTime))
+
+	timeColor="$gray"
+	[[ $loadTime -gt 200 ]] && timeColor="$yellow"
+	[[ $loadTime -gt 600 ]] && timeColor="$red"
+
+	printf '%b%s%b' \
+		"$timeColor" \
+		"${loadTime}ms" \
+		"$reset"
+}
+
 notifyLoaded() {
 	local moduleName
-	moduleName="$(basename "$(caller | awk '{print $2}')" .bash)"
-	printf '%b✔%b %s loaded\n' "$green" "$reset" "$moduleName"
+	moduleName="$(basename "$(caller | awk '{print $2}')")"
+	loadTime="$(_printLoadTime "$BK_DEBUG_IMPORT_TIME_START")"
+
+	printf '%b✔%b %s loaded %s\n' "$green" "$reset" "$moduleName" "$loadTime"
 }
 
 notifySkipped() {
 	local reason="$1"
 
 	local moduleName
-	moduleName="$(basename "$(caller | awk '{print $2}')" .bash)"
+	moduleName="$(basename "$(caller | awk '{print $2}')")"
+	loadTime="$(_printLoadTime "$BK_DEBUG_IMPORT_TIME_START")"
 
-	if [[ ${reason:-} != '' ]]; then
-		printf '%b⚠ %s skipped:%b %s\n' "$yellow" "$moduleName" "$reset" "$reason"
+	if [[ ${reason-} != '' ]]; then
+		printf '%b⚠ %s skipped:%b %s %s\n' "$yellow" "$moduleName" "$reset" "$reason" "$loadTime"
 	else
-		printf '%b⚠ %s skipped%b\n' "$yellow" "$moduleName" "$reset"
+		printf '%b⚠ %s skipped%b %s\n' "$yellow" "$moduleName" "$reset" "$loadTime"
 	fi
 }
 
@@ -31,7 +51,7 @@ notifyWarn() {
 	local message="$1"
 
 	local moduleName
-	moduleName="$(basename "$(caller | awk '{print $2}')" .bash)"
+	moduleName="$(basename "$(caller | awk '{print $2}')")"
 
 	printf '%b⚠ %s warning:%b %s\n' "$yellow" "$moduleName" "$reset" "$message"
 }
