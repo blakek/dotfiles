@@ -18,9 +18,7 @@ if [ -s "$NVM_DIR/bash_completion" ]; then
 	source "$NVM_DIR/bash_completion"
 fi
 
-# Add helper so `cd` will run `nvm install` and `nvm use`
-cdnvm() {
-	command cd "$@" || return
+__nvm_use_auto() {
 	nvm_path=$(nvm_find_up .nvmrc | tr -d '\n')
 
 	# If there are no .nvmrc file, use the default nvm version
@@ -62,6 +60,13 @@ cdnvm() {
 	fi
 }
 
+# Add helper so `cd` will run `nvm install` and `nvm use`
+cdnvm() {
+	command cd "$@" || return
+	__nvm_use_auto
+}
+
 alias cd='cdnvm'
+__nvm_use_auto
 
 notifyLoaded
