@@ -96,7 +96,6 @@ main() {
 
 	# Make list of files to install
 	local files=(
-		bin/*
 		.bash_*
 		'.gitconfig'
 		'.gitignore'
@@ -126,9 +125,6 @@ main() {
 			exit 1
 		fi
 	fi
-
-	# Make necessary directories for install
-	mkdir -p "${installRoot}/bin"
 
 	for file in "${files[@]}"; do
 		# Dry run just prints files that would be linked
