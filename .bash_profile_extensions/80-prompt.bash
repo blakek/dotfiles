@@ -38,7 +38,27 @@ promptCommand() {
 		symbol="${symbolErrorColor}${symbolError}${e_reset}"
 	fi
 
-	__git_ps1 "${symbol} ${directoryColor}\W${repoColor}" "${e_reset} " " %s"
+	local isInGitRepo=$(git rev-parse --is-inside-work-tree 2>/dev/null)
+	local directory=""
+	local cwd="$(realpath "$PWD")"
+
+	# In a git repo, show the CWD relative to the repo root
+	# If not in a git repo, show the directory name
+	# Examples:
+	#   ~/dev/dotfiles (repo root) -> dotfiles
+	#   ~/dev/dotfiles/src (repo) -> dotfiles/src
+	#   ~/dev/dotfiles/src (not in repo) -> ~/dev/dotfiles/src
+	#   /Users/username (home) -> ~
+	if [[ $isInGitRepo == "true" ]]; then
+		local repoRoot=$(git rev-parse --show-toplevel)
+		local repoRootName=$(basename "$repoRoot")
+
+		directory="${cwd/#$repoRoot/$repoRootName}"
+	else
+		directory="\w"
+	fi
+
+	__git_ps1 "${symbol} ${directoryColor}${directory}${repoColor}" "${e_reset} " " %s"
 	update_terminal_cwd 2>/dev/null
 }
 
