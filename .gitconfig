@@ -120,4 +120,12 @@ default = current
 
 [user]
 name = Blake Knight
-email = blake.knight@zapier.com
+email = oss.ideas@gmail.com
+
+# Work-specific configurations
+[includeIf "hasconfig:remote.*.url:git@gitlab.com:zapier/**"]
+path = ~/dev/dotfiles/hidden_zapier/.gitconfig
+[includeIf "hasconfig:remote.*.url:https://gitlab.com/zapier/**"]
+path = ~/dev/dotfiles/hidden_zapier/.gitconfig
+[includeIf "hasconfig:remote.*.url:https://*gitlab.com/zapier/**"]
+path = ~/dev/dotfiles/hidden_zapier/.gitconfig

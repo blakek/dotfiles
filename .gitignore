@@ -15,3 +15,6 @@ Thumbs.db
 
 # Hidden config files won't be added to this repo
 .bash_profile_extensions/.*
+
+# Special overrides I don't want to commit
+hidden_*/
