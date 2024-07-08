@@ -96,7 +96,7 @@ main() {
 
 	# Make list of files to install
 	local files=(
-		.bash_*
+		.bash*
 		'.gitconfig'
 		'.gitignore'
 		'.tmux.conf'
