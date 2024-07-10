@@ -20,7 +20,7 @@ var openSlackLinksInApp = {
       zapier: "T024VA8T9"
     };
     const team = Object.entries(teams).find(([name]) => url.host.includes(name))?.[1] ?? "";
-    const pathPartsMatches = /\/archives\/(?<channel>C\w+)\/(?<message>p\w+)/.exec(url?.pathname ?? "")?.groups;
+    const pathPartsMatches = /\/archives\/(?<channel>C\w+)(?:\/(?<message>p\w+))?/.exec(url?.pathname ?? "")?.groups;
     const params = parseQuery(url?.search ?? "");
     params.team = team;
     params.id = pathPartsMatches?.channel;

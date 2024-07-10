@@ -1,5 +1,5 @@
 import type { Handler, FinickyConfig } from "finicky/config-api/src/types";
-import { parseQuery, toQueryString } from "./utils";
+import { log, parseQuery, toQueryString } from "./utils";
 
 const openSlackLinksInApp: Handler = {
   browser: "Slack",
@@ -18,7 +18,7 @@ const openSlackLinksInApp: Handler = {
       "";
 
     const pathPartsMatches =
-      /\/archives\/(?<channel>C\w+)\/(?<message>p\w+)/.exec(
+      /\/archives\/(?<channel>C\w+)(?:\/(?<message>p\w+))?/.exec(
         url?.pathname ?? ""
       )?.groups;
 
