@@ -251,4 +251,34 @@ isInstalled tree && tre() {
 	tree -aC -I '.git|.next|node_modules|bower_components' --dirsfirst "$@" | less -FRX
 }
 
+##
+# Blocks until a port has something listening on it
+##
+waitForPort() {
+	local port="${1?Missing port}"
+
+	# Using `netstat` instead of `lsof` because it's faster
+	while ! netstat -van | grep -q "${port}.*LISTEN"; do
+		sleep 1
+	done
+}
+
+##
+# Start the dev server along with some helpful extras
+##
+yeet() {
+	# TODO: Add support for different project/port combinations
+	local port="9384"
+
+	git pull --prune --quiet
+	yarn install --silent
+
+	yarn dev &
+
+	waitForPort "$port"
+	open "http://localhost:${port}/"
+
+	fg
+}
+
 notifyLoaded
