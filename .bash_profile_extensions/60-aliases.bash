@@ -61,6 +61,8 @@ alias yy='yarn && yarn dev'
 alias yyd='yarn && yarn dev'
 alias ytc='yarn && yarn typecheck'
 alias yeet='git pull --prune --quiet && yarn install --silent && yarn dev'
+# Faster parallelized "yarn" commands
+alias yp="bun run --filter '*'"
 
 # Rsync with defaults to only rely on checksums
 alias rcp='rsync --archive --compress --checksum --human-readable --no-times --progress'
