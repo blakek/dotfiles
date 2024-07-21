@@ -23,6 +23,7 @@ light_gray='\e[0;37m'
 
 # Formats
 bold='\e[1m'
+dim='\e[2m'
 italic='\e[3m'
 underline='\e[4m'
 strikethrough='\e[9m'

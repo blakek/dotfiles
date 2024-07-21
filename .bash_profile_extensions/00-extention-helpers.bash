@@ -15,9 +15,9 @@ _printLoadTime() {
 
 	local loadTime=$((endTime - startTime))
 
-	timeColor="$gray"
+	timeColor="$dim"
 	[[ $loadTime -gt 200 ]] && timeColor="$yellow"
-	[[ $loadTime -gt 600 ]] && timeColor="$red"
+	[[ $loadTime -gt 500 ]] && timeColor="$red"
 
 	printf '%b%s%b' \
 		"$timeColor" \
@@ -30,7 +30,7 @@ notifyLoaded() {
 	moduleName="$(basename "$(caller | awk '{print $2}')")"
 	loadTime="$(_printLoadTime "$DOTFILES_IMPORT_TIME_START")"
 
-	printf '%b✔%b %s loaded %s\n' "$green" "$reset" "$moduleName" "$loadTime"
+	printf '%b✓%b %s loaded %s\n' "$green" "$reset" "$moduleName" "$loadTime"
 }
 
 notifySkipped() {
