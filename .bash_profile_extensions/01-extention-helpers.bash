@@ -15,14 +15,11 @@ _printLoadTime() {
 
 	local loadTime=$((endTime - startTime))
 
-	timeColor="$dim"
-	[[ $loadTime -gt 200 ]] && timeColor="$yellow"
-	[[ $loadTime -gt 500 ]] && timeColor="$red"
+	timeColor="dim"
+	[[ $loadTime -gt 200 ]] && timeColor="yellow"
+	[[ $loadTime -gt 500 ]] && timeColor="red"
 
-	printf '%b%s%b' \
-		"$timeColor" \
-		"${loadTime}ms" \
-		"$reset"
+	bk.term.decorate "%{${timeColor}}${loadTime}ms%{reset}"
 }
 
 notifyLoaded() {
@@ -30,7 +27,7 @@ notifyLoaded() {
 	moduleName="$(basename "$(caller | awk '{print $2}')")"
 	loadTime="$(_printLoadTime "$DOTFILES_IMPORT_TIME_START")"
 
-	printf '%b✓%b %s loaded %s\n' "$green" "$reset" "$moduleName" "$loadTime"
+	bk.term.decorate "%{green}✓%{reset} ${moduleName} loaded ${loadTime}\n"
 }
 
 notifySkipped() {
@@ -41,9 +38,9 @@ notifySkipped() {
 	loadTime="$(_printLoadTime "$DOTFILES_IMPORT_TIME_START")"
 
 	if [[ ${reason-} != '' ]]; then
-		printf '%b⚠ %s skipped:%b %s %s\n' "$yellow" "$moduleName" "$reset" "$reason" "$loadTime"
+		bk.term.decorate "%{yellow}⊘%{reset} ${moduleName} skipped: ${reason} ${loadTime}\n"
 	else
-		printf '%b⚠ %s skipped%b %s\n' "$yellow" "$moduleName" "$reset" "$loadTime"
+		bk.term.decorate "%{yellow}⊘%{reset} ${moduleName} skipped ${loadTime}\n"
 	fi
 }
 
@@ -53,7 +50,7 @@ notifyWarn() {
 	local moduleName
 	moduleName="$(basename "$(caller | awk '{print $2}')")"
 
-	printf '%b⚠ %s warning:%b %s\n' "$yellow" "$moduleName" "$reset" "$message"
+	bk.term.decorate "%{yellow}⚠%{reset} ${moduleName} warning: ${message}\n"
 }
 
 [[ ${BASH_VERSINFO[0]} -lt 4 ]] && {
