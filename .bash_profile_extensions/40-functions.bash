@@ -106,6 +106,18 @@ backup() {
 }
 
 ##
+# Simple countdown timer
+##
+countdown() {
+	local duration="$1"
+	while [[ $duration -gt 0 ]]; do
+		printf '\r%ss remaining%b' "$duration" '\033[K'
+		sleep 1
+		((duration--))
+	done
+}
+
+##
 # Create a data URL from a file
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
 ##
