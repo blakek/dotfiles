@@ -27,12 +27,12 @@ show_usage() {
 
 		$(bold OPTIONS)
 		    -h, --help     output usage information and exit
-		    -m, --message  a template message to display; see below for syntax
 		    -v, --version  output the version number and exit
+			-c, --color    what color to use for the progress bar (default: #FFA500; accepts hex colors)
+		    -m, --message  a template message to display; see below for syntax
 
-		    --no-elapsed   disable the time elapsed indicator
+		    --no-color     disable color output
 		    --no-progress  disable the progress bar
-		    --no-remaining disable the time remaining indicator
 
 		$(bold ARGUMENTS)
 		    time      time to count down from (e.g. 1h23m45s)
@@ -103,10 +103,10 @@ fancy_timer() {
 	local time=0
 	local message="%r remaining"
 	local progress=true
-	local remaining=true
-	local elapsed=true
+	local color="$(bk.term.decorate '%{fg:#FFA500}')"
 
 	local ansi_invert="\033[7m"
+	local ansi_end_invert="\033[27m"
 	local ansi_reset="\033[0m"
 	local ansi_clear_line="\033[K"
 
@@ -121,20 +121,20 @@ fancy_timer() {
 				echo "$fancy_timer_version"
 				return
 				;;
+			-c | --color)
+				color="$(bk.term.decorate "%{fg:$2}")"
+				shift 2
+				;;
 			-m | --message)
 				message="$2"
 				shift 2
 				;;
+			--no-color)
+				color=""
+				shift
+				;;
 			--no-progress)
 				progress=false
-				shift
-				;;
-			--no-remaining)
-				remaining=false
-				shift
-				;;
-			--no-elapsed)
-				elapsed=false
 				shift
 				;;
 			*)
@@ -176,11 +176,13 @@ fancy_timer() {
 			local remaining_columns=$((column_count - progress_columns))
 
 			# Draw the progress bar with the message, adding padding to any remaining space
-			printf '\r%b%-*.*s%b%-*.*s%b' \
+			printf '\r%b%b%-*.*s%b%-*.*s%b%b' \
+				"$color" \
 				"$ansi_invert" \
 				$progress_columns $progress_columns "$message_string" \
-				"$ansi_reset" \
+				"$ansi_end_invert" \
 				$remaining_columns $remaining_columns "${message_string:progress_columns}" \
+				"$ansi_reset" \
 				"$ansi_clear_line"
 
 		else
