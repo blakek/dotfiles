@@ -16,6 +16,8 @@ declare -a pathAdditions=(
 	"${HOME}/Library/pnpm"
 	# Directory-specific node_modules
 	"node_modules/.bin"
+	# Pipx
+	"${HOME}/.local/bin"
 )
 
 # Combine all paths into a single string
