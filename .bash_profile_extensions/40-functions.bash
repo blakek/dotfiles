@@ -143,6 +143,10 @@ dnsinfo() {
 	dig +noall +answer +multiline "${recordsRequests[@]}"
 }
 
+downloadAudio() {
+	yt-dlp --extract-audio --audio-format m4a "$@"
+}
+
 ##
 # Add defaults to the default GitHub Desktop CLI
 ##
