@@ -284,7 +284,7 @@ waitForPort() {
 ##
 yeet() {
 	# TODO: Add support for different project/port combinations
-	local port="9384"
+	local port="${PORT:-9384}"
 
 	git pull --prune --quiet
 	yarn install --silent
