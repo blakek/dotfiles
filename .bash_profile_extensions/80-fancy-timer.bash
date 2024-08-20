@@ -8,7 +8,7 @@
 # - Shows a reverse progress bar for a larger indicator of time remaining
 ##
 
-fancy_timer_version="1.0.0-alpha.1"
+fancy_timer_version="1.0.0-alpha.2"
 
 bold() {
 	echo -e "\033[1m$*\033[0m"
@@ -28,7 +28,7 @@ show_usage() {
 		$(bold OPTIONS)
 		    -h, --help     output usage information and exit
 		    -v, --version  output the version number and exit
-			-c, --color    what color to use for the progress bar (default: #FFA500; accepts hex colors)
+		    -c, --color    what color to use for the progress bar (default: #FFA500; accepts hex colors)
 		    -m, --message  a template message to display; see below for syntax
 
 		    --no-color     disable color output
