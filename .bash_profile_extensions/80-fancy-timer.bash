@@ -193,8 +193,8 @@ fancy_timer() {
 		sleep 1
 	done
 
-	# Print the final message
-	printf "\r%s%b\n" "$message_string" "$ansi_clear_line"
+	# Print the elapsed time
+	printf "\r%s elapsed%b\n" "$(format_time $time)" "$ansi_clear_line"
 }
 
 export -f fancy_timer
