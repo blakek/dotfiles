@@ -18,14 +18,6 @@ export GIT_PS1_SHOWUNTRACKEDFILES='yes'
 export GIT_PS1_SHOWSTASHSTATE='yes'
 export GIT_PS1_SHOWUPSTREAM='auto'
 
-__getPath() {
-	if isInstalled realpath; then
-		realpath "$1"
-	else
-		echo "$1"
-	fi
-}
-
 promptCommand() {
 	local lastReturn="$?" # Must go first!
 
@@ -52,7 +44,8 @@ promptCommand() {
 
 	local isInGitRepo=$(git rev-parse --is-inside-work-tree 2>/dev/null)
 	local directory=""
-	local cwd="$(__getPath "$PWD")"
+	# Get the "real" path by resolving symlinks
+	local cwd="$(pwd -P)"
 
 	# In a git repo, show the CWD relative to the repo root
 	# If not in a git repo, show the directory name
