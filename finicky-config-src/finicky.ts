@@ -1,43 +1,33 @@
 import type { Handler, FinickyConfig } from "finicky/config-api/src/types";
-import { log, parseQuery, toQueryString } from "./utils";
+import {
+  extractSlackUrlParts,
+  isSlackDeepLink,
+  log,
+  logError,
+  parseQuery,
+  toQueryString,
+} from "./utils";
 
 const openSlackLinksInApp: Handler = {
   browser: "Slack",
-  match: ({ urlString }) =>
-    /(alliwantforchristmas|zapier).slack.com\/archives\/C\w+(?:\/p\w+)?/.test(
-      urlString
-    ),
-  url: ({ url }) => {
-    const teams = {
-      alliwantforchristmas: "T01DQLVBJUA",
-      zapier: "T024VA8T9",
-    };
+  match: ({ urlString }) => isSlackDeepLink(urlString),
+  url: ({ url, urlString }) => {
+    const slackUrlParts = extractSlackUrlParts(urlString);
 
-    const team =
-      Object.entries(teams).find(([name]) => url.host.includes(name))?.[1] ??
-      "";
-
-    const pathPartsMatches =
-      /\/archives\/(?<channel>C\w+)(?:\/(?<message>p\w+))?/.exec(
-        url?.pathname ?? ""
-      )?.groups;
-
-    const params = parseQuery(url?.search ?? "");
-    params.team = team;
-    params.id = pathPartsMatches?.channel;
-
-    // Convert message to timestamp format
-    if (pathPartsMatches?.message) {
-      params.message =
-        pathPartsMatches.message.slice(1, 11) +
-        "." +
-        pathPartsMatches.message.slice(11);
+    if (!slackUrlParts || !slackUrlParts.teamId) {
+      logError(new Error(`Slack URL passed match but couldn't be parsed`));
+      log(urlString);
+      return url;
     }
 
     return {
       protocol: "slack",
       host: "channel",
-      search: toQueryString(params),
+      search: toQueryString({
+        team: slackUrlParts.teamId,
+        id: slackUrlParts.channel,
+        message: slackUrlParts.message,
+      }),
       pathname: "",
     };
   },
