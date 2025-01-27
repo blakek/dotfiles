@@ -1,0 +1,8 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "git.branchProtectionPrompt": "alwaysCommit",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
