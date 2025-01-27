@@ -1,11 +1,26 @@
+import path from "path";
 // Just to make the watch command work…
 import "./finicky";
 
-const output = Bun.file("../settings/finicky.js");
+/**
+ * Takes a path relative to this file and returns the absolute path.
+ */
+function getPath(relativePath: string) {
+  return path.join(__dirname, relativePath);
+}
+
+const entryPath = getPath("finicky.ts");
+const outputPath = getPath("../settings/finicky.js");
+
+const output = Bun.file(outputPath);
 
 const result = await Bun.build({
-  entrypoints: ["./finicky.ts"],
+  entrypoints: [entryPath],
 });
+
+for (const log of result.logs) {
+  console.log(log);
+}
 
 for (const res of result.outputs) {
   const buildResult = await res.text();
@@ -17,5 +32,7 @@ for (const res of result.outputs) {
     "module.exports = $1;"
   );
 
-  Bun.write(output, fixedBuildResult);
+  await Bun.write(output, fixedBuildResult);
 }
+
+console.log("Finicky config built successfully!");
