@@ -12,6 +12,7 @@ log-simple = log --format=format:'%B'
 log-understandable = log --format=format:'%C(bold)%cr, %cN (%cE) created commit %h:%n%C(reset)%B%n'
 undo-commit = reset --soft HEAD~1
 # catchup = !git stash && git switch $1 && git pull && git switch - && git rebase $1 && git stash pop
+count-conflicts = !git merge-tree $(git rev-parse --abbrev-ref HEAD) $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') | grep -e '^CONFLICT' | wc -l | tr -d ' '
 
 # [branch]
 # # `git pull` will rebase instead of merging; see also pull.rebase
