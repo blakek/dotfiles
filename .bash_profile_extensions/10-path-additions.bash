@@ -12,8 +12,6 @@ declare -a pathAdditions=(
 	"${HOME}/.config/yarn/global/node_modules/.bin"
 	# Deno binaries
 	"${HOME}/.deno/bin"
-	# pnpm
-	"${HOME}/Library/pnpm"
 	# Directory-specific node_modules
 	"node_modules/.bin"
 	# Pipx
