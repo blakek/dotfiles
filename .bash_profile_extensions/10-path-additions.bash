@@ -3,6 +3,7 @@
 declare -a pathAdditions=(
 	# My personal scripts
 	"${HOME}/bin"
+	"${DOTFILES_ROOT}/bin"
 	# Rust binaries
 	"${HOME}/.cargo/bin"
 	# Go binaries
