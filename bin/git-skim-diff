@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+##
+# Show a diff which excludes files over a given size + ignoring certain known patterns
+
+set -euo pipefail
+
+# Defaults
+MAX_SIZE_KB=25
+IGNORE_PATTERNS=(
+	"*.dll"
+	"*.exe"
+	"*.generated.*"
+	"*.gif"
+	"*.jpeg"
+	"*.jpg"
+	"*.lock"
+	"*.log"
+	"*.o"
+	"*.png"
+	"*.so"
+	"*.tar.bz2"
+	"*.tar.gz"
+	"*.tmp"
+	"*.zip"
+	"node_modules/*"
+	"package-lock.json"
+	"pnpm-lock.yaml"
+)
+
+showUsage() {
+	cat <<-END
+		Show a diff which excludes files over a given size + ignoring certain known patterns
+
+		Usage:
+		    git-skim-diff [options] [<commit>] [--] [<path>...]
+
+		Options:
+		    -m, --max-size <size>  maximum file size in KB to include in the diff (default: $MAX_SIZE_KB)
+		    -h, --help             output usage information and exit
+	END
+}
+
+createExcludePattern() {
+	local pattern="$1"
+	printf ':(exclude)%s\n' "$pattern"
+}
+
+debugLog() {
+	if [[ ${DEBUG-} ]]; then
+		printf '%s\n' "$@" >&2
+	fi
+}
+
+git-skim-diff() {
+	local maxSizeKB="$MAX_SIZE_KB"
+	local diffArgs=()
+	local excludes=()
+
+	# Parse arguments
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-m | --max-size)
+				if [[ -n ${2-} && $2 =~ ^[0-9]+$ ]]; then
+					maxSizeKB="$2"
+					shift
+				else
+					echo "Error: Invalid size specified. Must be a number." >&2
+					return 1
+				fi
+				;;
+
+			-h | --help | help)
+				showUsage
+				return
+				;;
+
+			*)
+				diffArgs+=("$1")
+				;;
+		esac
+		shift
+	done
+
+	mapfile -t diffFiles < <(git diff --name-only "${diffArgs[@]}")
+
+	# Add excludes for files over the specified size
+	debugLog "Excluding files larger than $maxSizeKB KB:"
+	for file in "${diffFiles[@]}"; do
+		if [[ -f $file ]]; then
+			local fileSizeKB
+			fileSizeKB=$(du -k "$file" | cut -f1)
+			if ((fileSizeKB > maxSizeKB)); then
+				excludes+=("$(createExcludePattern "$file")")
+				debugLog "  • $file ($fileSizeKB KB)"
+			fi
+		fi
+	done
+
+	# Add excludes for preset patterns
+	debugLog "Excluding files matching preset patterns:"
+	for pattern in "${IGNORE_PATTERNS[@]}"; do
+		excludes+=("$(createExcludePattern "$pattern")")
+		debugLog "  • $pattern"
+	done
+
+	# Run the diff command with excludes
+	git diff "${diffArgs[@]}" -- . "${excludes[@]}"
+}
+
+if [[ ${BASH_SOURCE[0]} == "${0}" ]]; then
+	git-skim-diff "$@"
+	exit $?
+else
+	export -f git-skim-diff
+fi
