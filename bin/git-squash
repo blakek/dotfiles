@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+##
+# Squashes an entire branch into a single commit
+##
+
+showUsage() {
+	cat <<-END
+		Squashes an entire branch into a single commit
+
+		Usage:
+		    git-squash [options]
+
+		Options:
+		    -m, --message  commit message
+		    -h, --help     output usage information and exit
+	END
+}
+
+git-squash() {
+	local commitMessage=""
+	local targetBranch=""
+
+	# Parse arguments
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-m | --message)
+				commitMessage="$2"
+				shift
+				;;
+
+			-h | --help | help)
+				showUsage
+				return
+				;;
+
+			*)
+				if [[ $targetBranch == "" ]]; then
+					targetBranch="$1"
+				else
+					echo "Error: unexpected argument '$1'"
+					return 1
+				fi
+				;;
+		esac
+		shift
+	done
+
+	if [[ $targetBranch == "" ]]; then
+		echo "Error: missing target branch"
+		return 1
+	fi
+
+	if [[ $commitMessage == "" ]]; then
+		echo "Error: missing commit message"
+		return 1
+	fi
+
+	git reset --soft "$targetBranch"
+	git commit -m "$commitMessage"
+
+	echo "Branch squashed into a single commit"
+	echo "You can push changes like:"
+	echo "  git push origin --force-with-lease"
+}
+
+if [[ ${BASH_SOURCE[0]} == "${0}" ]]; then
+	git-squash "$@"
+	exit $?
+else
+	export -f git-squash
+fi
