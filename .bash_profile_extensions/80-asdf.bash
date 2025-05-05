@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Use my globals first, then fall back to asdf
-export ASDF_FORCE_PREPEND="no"
+# Force asdf to be prepended to PATH
+export ASDF_FORCE_PREPEND="yes"
 
 load_asdf() {
 	local -r asdfPath="${HOME}/.asdf"
