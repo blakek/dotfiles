@@ -2,6 +2,7 @@
 
 ##
 # Show a diff which excludes files over a given size + ignoring certain known patterns
+##
 
 set -euo pipefail
 
