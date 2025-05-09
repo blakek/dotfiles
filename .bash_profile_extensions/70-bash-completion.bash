@@ -1,5 +1,8 @@
 # NOTE: this needs to come after the PATH additions
 
+# With `BASH_COMPLETION_COMPAT_DIR` set, you can add new completions like this:
+# <some_command> completion bash > "${BASH_COMPLETION_COMPAT_DIR}/<some_command>"
+
 if isInstalled brew; then
 	brewPrefix="$(brew --prefix)"
 
