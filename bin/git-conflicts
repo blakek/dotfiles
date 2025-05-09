@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+
+##
+# Shows conflicts between two branches
+##
+
+set -euo pipefail
+
+# Formatting functions
+bold() {
+	format_bold='\033[1m'
+	format_reset='\033[0m'
+	echo -e "${format_bold}$1${format_reset}"
+}
+
+dim() {
+	format_dim='\033[2m'
+	format_reset='\033[0m'
+	echo -e "${format_dim}$1${format_reset}"
+}
+
+debug() {
+	if [[ ${DEBUG-} ]]; then
+		# shellcheck disable=SC2059 # We're purposely wrapping printf
+		dim "$(printf "$@")"
+	fi
+}
+
+debug_print_array() {
+	local -n arr="$1"
+
+	debug "$1: ("
+	for item in "${arr[@]}"; do
+		debug "  $item,"
+	done
+	debug ")"
+}
+
+error() {
+	format_red='\033[0;31m'
+	format_reset='\033[0m'
+	echo -e "${format_red}$1${format_reset}" >&2
+}
+
+panic() {
+	error "$1"
+	exit 1
+}
+
+show_usage() {
+	cat <<-END
+		$(bold git-conflicts) - Show conflicts between two branches
+
+		$(bold USAGE)
+
+		  Show usage information:
+		  $ git conflicts --help
+
+		  Show conflicts between two branches:
+		  $ git conflicts [<source_branch>] [<target_branch>]
+
+		  Show a count of conflicting files:
+		  $ git conflicts --count [<source_branch>] [<target_branch>]
+
+		$(bold OPTIONS)
+
+		  -c, --count
+		    Show only a count of conflicting files
+
+		  -h, --help
+		    Show this help message and exit
+
+		  -v, --version
+		    Show version information and exit
+
+		  source_branch
+		    The branch to compare against. Defaults to the current branch.
+
+		  target_branch
+		    The branch to compare with. Defaults to the default branch for the default remote.
+	END
+}
+
+assert_git_repo() {
+	if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+		panic "Not a git repository. Please run this command inside a git repository."
+	fi
+}
+
+get_current_branch() {
+	git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+get_default_target_branch() {
+	git rev-parse --abbrev-ref origin/HEAD 2>/dev/null
+}
+
+get_upstream_name_for_branch() {
+	local branch="$1"
+	local upstream_name
+	upstream_name=$(git rev-parse --abbrev-ref "$branch@{upstream}" 2>/dev/null)
+	if [[ $? -ne 0 ]]; then
+		panic "Failed to get the upstream name for branch '$branch'."
+	fi
+	echo "$upstream_name"
+}
+
+git-conflicts() {
+	local -a conflicts=()
+	local count_only="no"
+	local source_branch=""
+	local target_branch=""
+
+	# Parse command-line arguments
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-c | --count)
+				count_only="yes"
+				;;
+			-h | --help)
+				show_usage
+				return 0
+				;;
+			-v | --version)
+				echo "git-conflicts version 1.0.0"
+				return 0
+				;;
+			*)
+				if [[ $source_branch == "" ]]; then
+					source_branch="$1"
+				elif [[ $target_branch == "" ]]; then
+					# Get the full upstream name for the branch if not provided
+					if [[ $1 == *"/"* ]]; then
+						target_branch="$1"
+					else
+						target_branch="$(get_upstream_name_for_branch "$1")"
+					fi
+				else
+					panic "Too many arguments provided."
+				fi
+				;;
+		esac
+		shift
+	done
+
+	# Check we have everything we need
+	assert_git_repo
+
+	# Set defaults
+	if [[ $source_branch == "" ]]; then
+		source_branch="$(get_current_branch)"
+		if [[ $source_branch == "" ]]; then
+			panic "No source branch specified and unable to determine the current branch."
+		fi
+	fi
+
+	if [[ $target_branch == "" ]]; then
+		target_branch="$(get_default_target_branch)"
+		if [[ $target_branch == "" ]]; then
+			panic "No target branch specified and unable to determine the default target branch."
+		fi
+	fi
+
+	if [[ $source_branch == "" ]]; then
+		panic "Source branch not specified. Please provide a source branch."
+	fi
+
+	if [[ $target_branch == "" ]]; then
+		panic "Target branch not specified. Please provide a target branch."
+	fi
+
+	debug "Source branch: $source_branch"
+	debug "Target branch: $target_branch"
+	debug "Count only: $count_only"
+
+	# Get the list of conflicting files
+	mapfile -t conflicts < <(
+		git merge-tree "${source_branch}" "${target_branch}" |
+			grep -E '^CONFLICT' |
+			# Example: CONFLICT (content): Merge conflict in <file>
+			# We want to extract the file name
+			sed -E 's/^CONFLICT \(.*\): Merge conflict in (.*)/\1/' |
+			# Remove leading whitespace
+			sed 's/^[[:space:]]*//'
+	)
+
+	debug "Conflicting files:"
+	debug_print_array conflicts
+
+	if [[ $count_only == "yes" ]]; then
+		echo "${#conflicts[@]}"
+		return 0
+	fi
+
+	if [[ ${#conflicts[@]} -eq 0 ]]; then
+		echo "No conflicts found between $source_branch and $target_branch."
+		return 0
+	fi
+
+	# Print the conflicting files
+	for file in "${conflicts[@]}"; do
+		echo "$file"
+	done
+}
+
+if [[ ${BASH_SOURCE[0]} == "${0}" ]]; then
+	git-conflicts "$@"
+	exit $?
+else
+	export -f git-conflicts
+fi
