@@ -1,51 +1,60 @@
-import type { FinickyConfig, Handler } from "finicky/config-api/src/types";
-import {
-  extractSlackUrlParts,
-  isSlackDeepLink,
-  log,
-  logError,
-  toQueryString,
-} from "./utils";
+import type { FinickyConfig, UrlRewriteRule } from "./types";
+import { extractSlackUrlParts, isSlackDeepLink, withProtocol } from "./utils";
 
-const openSlackLinksInApp: Handler = {
-  browser: "Slack",
-  match: ({ urlString }) => isSlackDeepLink(urlString),
-  url: ({ url, urlString }) => {
-    const slackUrlParts = extractSlackUrlParts(urlString);
+export const openSlackLinksInApp: UrlRewriteRule = {
+  match: (url) => isSlackDeepLink(url),
+  url: (url) => {
+    const slackUrlParts = extractSlackUrlParts(url);
 
-    if (!slackUrlParts || !slackUrlParts.teamId) {
-      logError(new Error(`Slack URL passed match but couldn't be parsed`));
-      log(urlString);
+    if (!slackUrlParts) {
+      console.error(
+        "Slack URL passed match but couldn't be parsed. Returning original URL."
+      );
+      console.log("Slack URL:", url.href);
       return url;
     }
 
-    return {
-      protocol: "slack",
-      host: "channel",
-      search: toQueryString({
-        team: slackUrlParts.teamId,
-        id: slackUrlParts.channel,
-        message: slackUrlParts.message,
-      }),
-      pathname: "",
-    };
+    let path = "channel";
+    if (slackUrlParts.channelType === "direct") {
+      path = "user";
+    }
+
+    const newUrl = new URL(`slack://${path}`);
+
+    // Preserve any existing query parameters
+    newUrl.search = url.search;
+
+    newUrl.searchParams.set("team", slackUrlParts.teamId);
+    newUrl.searchParams.set("id", slackUrlParts.channel);
+    if (slackUrlParts.message) {
+      newUrl.searchParams.set("message", slackUrlParts.message);
+    }
+
+    return newUrl;
   },
 };
 
-const openTrelloLinksInApp: Handler = {
-  browser: "Trello",
-  match: ({ url }) => url.host === "trello.com",
-  url: ({ url }) => {
-    return {
-      ...url,
-      protocol: "trello",
-    };
-  },
+export const openTrelloLinksInApp: UrlRewriteRule = {
+  match: (url) => url.host === "trello.com",
+  url: (url) => withProtocol(url, "trello"),
 };
 
-// Until Bun supports CommonJS output, you have to replace this line on the
-// output file with `module.exports = config;`
-export const config: FinickyConfig = {
+const config: FinickyConfig = {
   defaultBrowser: "Brave Browser",
-  handlers: [openSlackLinksInApp, openTrelloLinksInApp],
+  options: {
+    checkForUpdates: true,
+  },
+  rewrite: [openSlackLinksInApp, openTrelloLinksInApp],
+  handlers: [
+    {
+      match: (url) => url.protocol === "slack:",
+      browser: "Slack",
+    },
+    {
+      match: (url) => url.protocol === "trello:",
+      browser: "Trello",
+    },
+  ],
 };
+
+export default config;

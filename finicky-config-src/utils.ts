@@ -1,80 +1,33 @@
-type Primitive = string | number | boolean | null | undefined;
-
 interface SlackUrlParts {
   /** The team subdomain (e.g. "alliwantforchristmas") */
   team: string;
   /** The team ID (e.g. "T01DQLVBJUA") */
-  teamId?: string;
+  teamId: string;
   /** The channel ID (e.g. "C12345678") */
   channel: string;
-  channelType: "public" | "private" | "direct";
+  channelType: "public" | "private" | "direct" | undefined;
   /** The message ID, if present, in a "timestamp" format (e.g. "1620000000.000100") */
   message?: string;
 }
 
-/**
- * Regular expression to match Slack team subdomains.
- * Captures the team subdomain in a Slack URL.
- */
-const SLACK_TEAM_PREFIX_REGEX = /(?<team>[^.]+)\.slack\.com/;
-
-const KNOWN_SLACK_TEAMS = {
+export const KNOWN_SLACK_TEAMS = {
   alliwantforchristmas: "T01DQLVBJUA",
   zapier: "T024VA8T9",
 } as const;
 
-/**
- * Regular expression to match all the parts of a Slack URL.
- * Captures the team subdomain, channel ID, and message ID in a Slack URL.
- * The message ID is optional.
- */
-const SLACK_URL_REGEX = new RegExp(
-  `^https://${SLACK_TEAM_PREFIX_REGEX.source}/archives/(?<channel>[CGD]\\w+)(?:/(?<message>p\\w+))?$`
-);
-
-/**
- * Extracts the team, channel, and message IDs from a Slack deep link.
- */
-export function extractSlackUrlParts(
-  urlString: string
-): SlackUrlParts | undefined {
-  const match = SLACK_URL_REGEX.exec(urlString);
-
-  if (!match) {
-    return undefined;
+function getSlackChannelType(
+  channelID: string
+): "public" | "private" | "direct" | undefined {
+  switch (channelID[0]) {
+    case "D":
+      return "direct";
+    case "G":
+      return "private";
+    case "C":
+      return "public";
+    default:
+      return undefined;
   }
-
-  if (!match.groups || !match.groups.team || !match.groups.channel) {
-    logError(new Error("Failed to extract Slack URL parts", { cause: match }));
-    return undefined;
-  }
-
-  let message: string | undefined;
-
-  // Convert message to timestamp format
-  if (match.groups.message) {
-    message =
-      match.groups.message.slice(1, 11) + "." + match.groups.message.slice(11);
-  }
-
-  const teamId = isKnownSlackTeam(match.groups.team)
-    ? KNOWN_SLACK_TEAMS[match.groups.team]
-    : undefined;
-
-  const channelType =
-    match.groups.channel[0] === "D"
-      ? "direct"
-      : match.groups.channel[0] === "G"
-      ? "private"
-      : "public";
-
-  return {
-    team: match.groups.team,
-    teamId,
-    channel: match.groups.channel,
-    channelType,
-    message,
-  };
 }
 
 function isKnownSlackTeam(
@@ -83,55 +36,60 @@ function isKnownSlackTeam(
   return team in KNOWN_SLACK_TEAMS;
 }
 
-/**
- * Tests if a string is a known Slack deep link.
- */
-export function isSlackDeepLink(urlString: string): boolean {
-  const testing = SLACK_URL_REGEX.exec(urlString);
+/** Returns a copy of a URL with a different protocol. */
+export function withProtocol(url: URL, protocol: string): URL {
+  let newProtocol = protocol;
+  if (!newProtocol.endsWith(":")) {
+    newProtocol += ":";
+  }
 
-  console.log({ testing });
-
-  return SLACK_URL_REGEX.test(urlString);
+  // We can't just set the protocol directly (it won't take it)
+  // so we create a new URL with an empty authority and the new protocol.
+  return new URL(`${url.pathname}${url.search}${url.hash}`, `${newProtocol}//`);
 }
 
-/**
- * Logs using the finicky.log function but converts non-string arguments to
- * strings.
- */
-export function log(...args: any[]) {
-  globalThis.finicky.log(
-    ...args.map((arg) =>
-      typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)
-    )
-  );
+export function extractSlackUrlParts(url: URL): SlackUrlParts | undefined {
+  const [type, channel, messagePath] = url.pathname.split("/").filter(Boolean);
+  const knownTypes = ["archives", "messages"];
+
+  if (!knownTypes.includes(type) || !channel) {
+    return undefined;
+  }
+
+  const team = url.host.split(".")[0];
+  if (!team || !isKnownSlackTeam(team)) {
+    return undefined;
+  }
+
+  // Removes the leading `p` + converts to timestamp format
+  // e.g. p1234567890000000 -> 1234567890.000000
+  const message = messagePath.slice(1, 11) + "." + messagePath.slice(11);
+
+  return {
+    channel,
+    channelType: getSlackChannelType(channel),
+    message,
+    team,
+    teamId: KNOWN_SLACK_TEAMS[team],
+  };
 }
 
-export function logError(error: Error) {
-  log(`[ERROR] ${error.message}`, error.stack);
-}
+export function isSlackDeepLink(url: URL): boolean {
+  if (
+    !url.pathname.startsWith("/archives/") &&
+    !url.pathname.startsWith("/messages/")
+  ) {
+    return false;
+  }
 
-/**
- * Parses a query string into an object.
- */
-export function parseQuery(query: string): Record<string, Primitive> {
-  return query
-    .replace(/^\?/, "")
-    .split("&")
-    .reduce((acc, pair) => {
-      const [key, value] = pair.split("=");
-      acc[key] = value;
-      return acc;
-    }, {} as Record<string, Primitive>);
-}
+  const teamName = url.host.split(".")[0];
+  if (!teamName) {
+    return false;
+  }
 
-/**
- * Converts an object into a query string.
- */
-export function toQueryString(params: Record<string, Primitive>): string {
-  return Object.entries(params)
-    .filter(
-      ([key, value]) => key !== "" && key !== undefined && value !== undefined
-    )
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
+  if (!isKnownSlackTeam(teamName)) {
+    return false;
+  }
+
+  return true;
 }

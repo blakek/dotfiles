@@ -25,7 +25,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
 
-    // Load finicky global types
-    "types": ["finicky/config-api/src/global.d.ts", "@types/bun"]
-  }
+    "types": ["@types/bun"]
+  },
 }
