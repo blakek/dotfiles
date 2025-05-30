@@ -9,22 +9,8 @@ set -euo pipefail
 # Defaults
 MAX_SIZE_KB=25
 IGNORE_PATTERNS=(
-	"*.dll"
-	"*.exe"
 	"*.generated.*"
-	"*.gif"
-	"*.jpeg"
-	"*.jpg"
 	"*.lock"
-	"*.log"
-	"*.o"
-	"*.png"
-	"*.so"
-	"*.tar.bz2"
-	"*.tar.gz"
-	"*.tmp"
-	"*.zip"
-	"node_modules/*"
 	"package-lock.json"
 	"pnpm-lock.yaml"
 )
