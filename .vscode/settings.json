@@ -3,6 +3,7 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
   },
+  "editor.formatOnSave": true,
   "git.branchProtectionPrompt": "alwaysCommit",
   "typescript.tsdk": "node_modules/typescript/lib"
 }
