@@ -2,10 +2,10 @@
   "name": "finicky-config-src",
   "module": "finicky.ts",
   "devDependencies": {
-    "@types/bun": "^1.1.6"
+    "@types/bun": "^1.2.15"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.3"
   },
   "scripts": {
     "build": "bun run build.ts",
