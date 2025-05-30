@@ -1,10 +1,9 @@
-import type { Handler, FinickyConfig } from "finicky/config-api/src/types";
+import type { FinickyConfig, Handler } from "finicky/config-api/src/types";
 import {
   extractSlackUrlParts,
   isSlackDeepLink,
   log,
   logError,
-  parseQuery,
   toQueryString,
 } from "./utils";
 
