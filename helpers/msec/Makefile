@@ -1,5 +1,5 @@
 NAME ?= msec
-CFLAGS ?= -Wall -Wextra -Werror -pedantic -std=c17 -Ofast -march=native -mtune=native
+CFLAGS ?= -Wall -Wextra -Werror -pedantic -std=c17 -O3 -ffast-math -march=native -mtune=native
 PREFIX ?= /usr/local/bin
 
 .PHONY: all
