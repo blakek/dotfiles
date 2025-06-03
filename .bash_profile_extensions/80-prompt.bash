@@ -4,7 +4,8 @@
 # ⚡︎ ƒ ⍺ ß ⌬
 
 if ! import "${HOME}/.git-prompt.sh"; then
-	notifySkipped "${HOME}/.git-prompt.sh not found"
+	notifyWarn "${HOME}/.git-prompt.sh not found"
+	notifyWarn "You can install it with 'curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh'"
 	return
 fi
 
