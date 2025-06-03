@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-if [[ ${VERBOSITY-} == '' ]]; then
-	notifyLoaded() { return; }
-	notifySkipped() { return; }
-	notifyWarn() { return; }
-
-	return
-fi
-
 _printLoadTime() {
 	local startTime="$1"
 	local endTime
@@ -56,5 +48,12 @@ notifyWarn() {
 [[ ${BASH_VERSINFO[0]} -lt 4 ]] && {
 	notifyWarn "Bash version is less than 4.0.0. Some features may not work."
 }
+
+if [[ ${VERBOSITY-} == '' ]]; then
+	notifyLoaded() { return; }
+	notifySkipped() { return; }
+
+	return
+fi
 
 notifyLoaded
