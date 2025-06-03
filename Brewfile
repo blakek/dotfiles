@@ -1,6 +1,4 @@
 tap "blakek/blakek"
-tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
 # Color management engine supporting ICC profiles
 brew "little-cms2"
 # Image format providing lossless and lossy compression for web images
@@ -156,8 +154,6 @@ cask "sf-symbols"
 cask "visual-studio-code"
 # Screen capture tool for remote teams
 cask "zappy"
-# Video communication and virtual meeting platform
-cask "zoom"
 mas "GarageBand", id: 682658836
 mas "Hidden Bar", id: 1452453066
 mas "iMovie", id: 408981434
