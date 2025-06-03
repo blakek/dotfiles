@@ -206,7 +206,7 @@ o() {
 ##
 isInstalled ipt && p() {
 	developDirectory="${HOME}/dev"
-	projectDirectory=$(ls $developDirectory | ipt -M 'Choose a project' -a)
+	projectDirectory=$(ls "$developDirectory" | ipt -M 'Choose a project' -a)
 	if [[ $projectDirectory != '' ]]; then
 		cd "${developDirectory}/${projectDirectory}" && code .
 	fi
@@ -279,17 +279,61 @@ waitForPort() {
 	done
 }
 
+portForProject() {
+	# Get the project root directory from git
+	local -r projectRoot="$(git rev-parse --show-toplevel)"
+
+	# Try to get the port from the package.json file
+	grep -Eo '[-:=]\d{4}' \
+		"${projectRoot}/packages/service/package.json" |
+		# Get the first match
+		head -n 1 |
+		# Remove the leading characters
+		sed -E 's/[-:=]//g' || echo 3000
+}
+
+projectManagerForProject() {
+	# Get the project root directory from git
+	local -r projectRoot="$(git rev-parse --show-toplevel)"
+	local packageManager=""
+
+	# Try to get the package manager from the `.tool-versions` file
+	packageManager="$(grep -Eo 'bun|pnpm|yarn|npm' \
+		"${projectRoot}/.tool-versions" |
+		# Get the first match
+		head -n 1)"
+
+	if [[ $packageManager != "" ]]; then
+		echo "$packageManager"
+		return
+	fi
+
+	# Try to get the package manager from the lock file
+	if [[ -f "${projectRoot}/bun.lockb" || -f "${projectRoot}/bun.lock" ]]; then
+		packageManager="bun"
+	elif [[ -f "${projectRoot}/pnpm-lock.yaml" ]]; then
+		packageManager="pnpm"
+	elif [[ -f "${projectRoot}/yarn.lock" ]]; then
+		packageManager="yarn"
+	elif [[ -f "${projectRoot}/package-lock.json" ]]; then
+		packageManager="npm"
+	fi
+
+	echo "${packageManager:-bun}"
+}
+
 ##
 # Start the dev server along with some helpful extras
 ##
 yeet() {
-	# TODO: Add support for different project/port combinations
-	local port="${PORT:-9384}"
+	local port=""
+	local packageManager=""
+	port="${PORT:-$(portForProject)}"
+	packageManager="$(projectManagerForProject)"
 
 	git pull --prune --quiet
-	yarn install --silent
-
-	yarn dev &
+	$packageManager install --silent
+	$packageManager run dev --silent &
 
 	waitForPort "$port"
 	open "http://localhost:${port}/"
