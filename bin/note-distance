@@ -1,0 +1,220 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+##
+# Returns the smallest semitone distance between two notes.
+##
+
+version='0.2.0'
+verbose='false'
+
+# Formatting functions
+bold() {
+	format_bold='\033[1m'
+	format_reset='\033[0m'
+	echo -e "${format_bold}$1${format_reset}"
+}
+
+dim() {
+	format_dim='\033[2m'
+	format_reset='\033[0m'
+	echo -e "${format_dim}$1${format_reset}"
+}
+
+debug() {
+	if [[ $verbose == "true" ]]; then
+
+		# shellcheck disable=SC2059 # We're purposely wrapping printf
+		dim "$(printf "$@")"
+	fi
+}
+
+error() {
+	format_red='\033[0;31m'
+	format_reset='\033[0m'
+	echo -e "${format_red}$1${format_reset}" >&2
+}
+
+panic() {
+	error "$1"
+	exit 1
+}
+
+show_usage() {
+	cat <<-EOF
+		$(bold note-distance) - Returns the smallest semitone distance between two notes
+
+		$(bold USAGE)
+
+		  $ note-distance --help
+		  $ note-distance --version
+		  $ note-distance note1 note2
+
+		  For example, to find the distance between C and E:
+
+		  $ note-distance C E      # » 4
+
+		  or, to find the distance between Bb and G#:
+
+		  $ note-distance Bb 'G#'  # » -2
+
+		  It may be necessary to quote notes with a sharp symbol to prevent the shell from interpreting it as a comment.
+
+		$(bold OPTIONS)
+
+		  -h, --help
+		    Show this help message and exit
+
+		  -v, --version
+		    Show the version of this script and exit
+	EOF
+}
+
+abs() {
+	if (($1 < 0)); then
+		echo $((-$1))
+	else
+		echo "$1"
+	fi
+}
+
+# Check if the note is valid (case insensitive base note followed by zero or
+# more sharps or flats
+is_valid_note() {
+	[[ $1 =~ ^[A-Ga-g][#b]*$ ]]
+}
+
+# Parse the note into an uppercase base note and any accidentals
+parse_note() {
+	if ! is_valid_note "$1"; then
+		echo ""
+		return
+	fi
+
+	local base_note=${1:0:1}
+	local accidental=${1:1}
+
+	# Convert the base note to uppercase
+	base_note=${base_note^^}
+
+	printf '%s%s' "$base_note" "$accidental"
+}
+
+note_index() {
+	note_map=(
+		C 0
+		D 2
+		E 4
+		F 5
+		G 7
+		A 9
+		B 11
+	)
+
+	# Get the base note from the argument
+	local base_note=${1:0:1}
+
+	# Get the index of the base note in the array
+	local base_note_index
+
+	for ((i = 0; i < ${#note_map[@]}; i += 2)); do
+		if [[ ${note_map[i]} == "$base_note" ]]; then
+			base_note_index=${note_map[i + 1]}
+			break
+		fi
+	done
+
+	# Get accidental(s) from the argument
+	local accidental=${1:1}
+
+	# Add 1 for each sharp and subtract 1 for each flat
+	for ((i = 0; i < ${#accidental}; i++)); do
+		if [[ ${accidental:i:1} == '#' ]]; then
+			((base_note_index++))
+		elif [[ ${accidental:i:1} == 'b' ]]; then
+			((base_note_index--))
+		fi
+	done
+
+	echo "$base_note_index"
+}
+
+note-distance() {
+	declare -a passed_notes
+
+	# Parse command line flags
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-h | --help)
+				show_usage
+				exit 0
+				;;
+
+			-v | --version)
+				echo "$version"
+				exit 0
+				;;
+
+			-V | --verbose)
+				verbose="true"
+				shift
+				;;
+
+			-*)
+				panic "Unknown option: $1"
+				;;
+
+			*)
+				parsed_note=$(parse_note "$1")
+
+				if [[ $parsed_note == "" ]]; then
+					panic "Invalid note: $1"
+				fi
+
+				if [[ ${#passed_notes[@]} -eq 2 ]]; then
+					panic "Too many notes"
+				fi
+
+				passed_notes+=(
+					"$(parse_note "$1")"
+				)
+				shift
+				;;
+		esac
+	done
+
+	local base_note=${passed_notes[0]?"Missing base note"}
+	local target_note=${passed_notes[1]?"Missing target note"}
+
+	debug 'Transposing %s to %s\n' "$base_note" "$target_note"
+
+	local base_note_index
+	local target_note_index
+	base_note_index=$(note_index "$base_note")
+	target_note_index=$(note_index "$target_note")
+
+	if [[ $verbose == "true" ]]; then
+		printf 'Base note index: %s\n' "$base_note_index"
+		printf 'Target note index: %s\n' "$target_note_index"
+	fi
+
+	# Calculate the distance between the two notes
+	local distance=$((target_note_index - base_note_index))
+	local wrapped_distance=$((distance % 12))
+
+	# Adjust wrapped distance to be within -6 to 5
+	if ((wrapped_distance > 6)); then
+		wrapped_distance=$((wrapped_distance - 12))
+	elif ((wrapped_distance <= -6)); then
+		wrapped_distance=$((wrapped_distance + 12))
+	fi
+
+	# Choose the shorter distance based on absolute value, preserving direction
+	if ((${distance#-} < ${wrapped_distance#-})); then
+		echo "$distance"
+	else
+		echo "$wrapped_distance"
+	fi
+}
+
+note-distance "$@"
