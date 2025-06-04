@@ -4,6 +4,8 @@ declare -a pathAdditions=(
 	# My personal scripts
 	"${HOME}/bin"
 	"${DOTFILES_ROOT}/bin"
+	"${DEV_ROOT}/scratchpad/bin"
+	"${DEV_ROOT}/temp/bin"
 	# Rust binaries
 	"${HOME}/.cargo/bin"
 	# Go binaries
