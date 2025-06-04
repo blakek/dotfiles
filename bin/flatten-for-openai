@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+##
+# Recursively concatenates all files in a directory into a single file with
+# filenames as headers.
+##
+
+format() {
+	local code="$1"
+	local text="$2"
+
+	printf '%b%s%b' "$code" "$text" '\e[0m'
+}
+
+italic() {
+	format '\e[3m' "$1"
+}
+
+red() {
+	format '\e[31m' "$1"
+}
+
+panic() {
+	echo "$(red "Error: $1")" >&2
+	exit 1
+}
+
+show_usage() {
+	cat <<-EOF
+		$(italic flatten-for-openai) [options] <directory>
+
+		$(italic OPTIONS)
+		  -h, --help             Show this help message and exit.
+		  -o, --output <file>    Output file. Default is stdout.
+		  -n, --name-format <format>  Format for filenames. Default is "// {directory}/{filename}". Supported variables are {directory} and {filename}.
+
+		$(italic EXAMPLES)
+		  Write all files in the directory to stdout:
+		    $(italic flatten-for-openai) /path/to/directory
+
+		  Write all files in the directory to a file, where filenames are like ">> path/to/file <<":
+		    $(italic flatten-for-openai) -o output.txt -n ">> {directory}/{filename} <<" /path/to/directory
+	EOF
+}
+
+flatten-for-openai() {
+	local output_file="/dev/stdout"
+	local name_format="// {directory}/{filename}"
+	local directory
+
+	# Parse options
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+			-h | --help)
+				show_usage
+				return 0
+				;;
+			-o | --output)
+				shift
+				output_file=$1
+				;;
+			-n | --name-format)
+				shift
+				name_format=$1
+				;;
+			-*)
+				panic "Unknown option $1"
+				;;
+			*)
+				directory=$1
+				;;
+		esac
+		shift
+	done
+
+	# Validate directory
+	if [[ -z $directory ]]; then
+		panic "Directory is required"
+	fi
+
+	if [[ ! -d $directory ]]; then
+		panic "Could not find directory $directory"
+	fi
+
+	find "$directory" -type f | while read -r file; do
+		local filename
+		local dirname
+		local header
+
+		filename=$(basename "$file")
+		dirname=$(dirname "$file")
+		header=$(echo "$name_format" | sed "s|{directory}|$dirname|g; s|{filename}|$filename|g")
+
+		echo "$header"
+		cat "$file"
+	done >"$output_file"
+}
+
+flatten-for-openai "$@"
