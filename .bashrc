@@ -2,6 +2,7 @@
 
 # The root directory of the dotfiles repository
 DOTFILES_ROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+export DOTFILES_ROOT
 
 # Set `VERBOSITY` to show debug messages in imported scripts
 # VERBOSITY="1"
