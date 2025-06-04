@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+notify-when-online() {
+	until curl --head https://ddg.gg; do
+		sleep 10
+	done
+
+	osascript -e 'display notification "Connected to ddg.gg. You should be good to go!" with title "Back online" sound name "Glass"'
+}
+
+notify-when-online
