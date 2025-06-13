@@ -26,4 +26,17 @@ export CLICOLOR=1
 # Expand ! combinations
 bind Space:magic-space
 
+# Tab through possible completions
+bind TAB:menu-complete
+bind '\e[Z':menu-complete-backward # Shift+Tab
+
+# Show the completion list. The default is tab-completion hides the list.
+bind 'set show-all-if-ambiguous on'
+
+# Show some colors in completions
+bind 'set colored-stats on'
+
+# Tab-completing in the middle of a word doesn't duplicate what's after the cursor
+bind 'set skip-completed-text on'
+
 notifyLoaded
