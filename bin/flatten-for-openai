@@ -84,7 +84,7 @@ list_files() {
 flatten-for-openai() {
 	local output_file="/dev/stdout"
 	local name_format="// {directory}/{filename}"
-	local directory
+	local directory="$PWD"
 	local separator="\n\n"
 	local use_gitignore="true"
 	local ignore_patterns=()
