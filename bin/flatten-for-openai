@@ -146,7 +146,7 @@ flatten-for-openai() {
 		dirname=$(dirname "$file")
 		header=$(echo "$name_format" | sed "s|{directory}|$dirname|g; s|{filename}|$filename|g")
 
-		echo "$header"
+		echo -e "$header"
 		cat "$file"
 		echo -e "$separator"
 	done >"$output_file"
