@@ -34,6 +34,8 @@ show_usage() {
 		  -o, --output <file>    Output file. Default is stdout.
 		  -n, --name-format <format>  Format for filenames. Default is "// {directory}/{filename}". Supported variables are {directory} and {filename}.
 		  -s, --separator <sep>       Separator between files. Default is two newlines.
+		  --no-gitignore          Do not respect .gitignore files.
+		  --ignore <pattern>      Ignore files matching the pattern.
 
 		$(italic EXAMPLES)
 		  Write all files in the directory to stdout:
@@ -41,7 +43,36 @@ show_usage() {
 
 		  Write all files in the directory to a file, where filenames are like ">> path/to/file <<":
 		    $(italic flatten-for-openai) -o output.txt -n ">> {directory}/{filename} <<" /path/to/directory
+
+		  Write all files in the directory to stdout, ignoring .gitignore and any .txt files:
+		    $(italic flatten-for-openai) --no-gitignore --ignore '\.txt$' /path/to/directory
 	EOF
+}
+
+# List files according to options
+list_files() {
+	local dir="$1"
+	local use_gitignore="$2"
+	shift 2
+	local ignore_patterns=("$@")
+
+	if [[ $use_gitignore == "true" ]]; then
+		# Use git ls-files to respect .gitignore, fallback to find if not a git repo
+		if git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+			files=$(git -C "$dir" ls-files --cached --others --exclude-standard)
+		else
+			files=$(find "$dir" -type f)
+		fi
+	else
+		files=$(find "$dir" -type f)
+	fi
+
+	# Apply ignore patterns
+	for pat in "${ignore_patterns[@]}"; do
+		files=$(echo "$files" | grep -v -E "$pat")
+	done
+
+	echo "$files"
 }
 
 flatten-for-openai() {
@@ -49,6 +80,8 @@ flatten-for-openai() {
 	local name_format="// {directory}/{filename}"
 	local directory
 	local separator="\n\n"
+	local use_gitignore="true"
+	local ignore_patterns=()
 
 	# Parse options
 	while [[ $# -gt 0 ]]; do
@@ -69,6 +102,13 @@ flatten-for-openai() {
 				shift
 				separator=$1
 				;;
+			--no-gitignore)
+				use_gitignore="false"
+				;;
+			--ignore)
+				shift
+				ignore_patterns+=("$1")
+				;;
 			-*)
 				panic "Unknown option $1"
 				;;
@@ -88,7 +128,10 @@ flatten-for-openai() {
 		panic "Could not find directory $directory"
 	fi
 
-	find "$directory" -type f | while read -r file; do
+	local files
+	files=$(list_files "$directory" "$use_gitignore" "${ignore_patterns[@]}")
+
+	echo "$files" | while read -r file; do
 		local filename
 		local dirname
 		local header
