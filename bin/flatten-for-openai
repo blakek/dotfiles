@@ -34,18 +34,24 @@ show_usage() {
 		  -o, --output <file>    Output file. Default is stdout.
 		  -n, --name-format <format>  Format for filenames. Default is "// {directory}/{filename}". Supported variables are {directory} and {filename}.
 		  -s, --separator <sep>       Separator between files. Default is two newlines.
-		  --no-gitignore          Do not respect .gitignore files.
-		  --ignore <pattern>      Ignore files matching the pattern.
+		  --no-gitignore          Do not respect .gitignore files (include all files).
+		  --ignore <pattern>      Ignore files matching the pattern (can be used multiple times; pattern is a regex).
 
 		$(italic EXAMPLES)
-		  Write all files in the directory to stdout:
-		    $(italic flatten-for-openai) /path/to/directory
+		  # Use .gitignore (default)
+		  $(italic flatten-for-openai) /path/to/directory
 
-		  Write all files in the directory to a file, where filenames are like ">> path/to/file <<":
-		    $(italic flatten-for-openai) -o output.txt -n ">> {directory}/{filename} <<" /path/to/directory
+		  # Write all files in the directory to a file, with custom filename headers
+		  $(italic flatten-for-openai) -o output.txt -n ">> {directory}/{filename} <<" /path/to/directory
 
-		  Write all files in the directory to stdout, ignoring .gitignore and any .txt files:
-		    $(italic flatten-for-openai) --no-gitignore --ignore '\.txt$' /path/to/directory
+		  # Ignore .gitignore and also ignore all .txt files
+		  $(italic flatten-for-openai) --no-gitignore --ignore '\\.txt$' /path/to/directory
+
+		  # Use .gitignore but also ignore Markdown files
+		  $(italic flatten-for-openai) --ignore '\\.md$' /path/to/directory
+
+		  # Ignore multiple patterns (e.g., .md and .test.js)
+		  $(italic flatten-for-openai) --ignore '\\.md$' --ignore '\\.test.js$' /path/to/directory
 	EOF
 }
 
