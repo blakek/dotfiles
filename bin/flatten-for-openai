@@ -33,6 +33,7 @@ show_usage() {
 		  -h, --help             Show this help message and exit.
 		  -o, --output <file>    Output file. Default is stdout.
 		  -n, --name-format <format>  Format for filenames. Default is "// {directory}/{filename}". Supported variables are {directory} and {filename}.
+		  -s, --separator <sep>       Separator between files. Default is two newlines.
 
 		$(italic EXAMPLES)
 		  Write all files in the directory to stdout:
@@ -47,6 +48,7 @@ flatten-for-openai() {
 	local output_file="/dev/stdout"
 	local name_format="// {directory}/{filename}"
 	local directory
+	local separator="\n\n"
 
 	# Parse options
 	while [[ $# -gt 0 ]]; do
@@ -62,6 +64,10 @@ flatten-for-openai() {
 			-n | --name-format)
 				shift
 				name_format=$1
+				;;
+			-s | --separator)
+				shift
+				separator=$1
 				;;
 			-*)
 				panic "Unknown option $1"
@@ -93,6 +99,7 @@ flatten-for-openai() {
 
 		echo "$header"
 		cat "$file"
+		echo -e "$separator"
 	done >"$output_file"
 }
 
