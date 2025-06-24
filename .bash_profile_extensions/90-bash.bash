@@ -28,7 +28,7 @@ bind Space:magic-space
 
 # Tab through possible completions
 bind TAB:menu-complete
-bind '\e[Z':menu-complete-backward # Shift+Tab
+bind '"\e[Z":menu-complete-backward'
 
 # Show the completion list. The default is tab-completion hides the list.
 bind 'set show-all-if-ambiguous on'
