@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+__DOTFILES_PROMPT_ADDITIONS=()
+
 _printLoadTime() {
 	local startTime="$1"
 	local endTime
@@ -12,6 +14,24 @@ _printLoadTime() {
 	[[ $loadTime -gt 500 ]] && timeColor="red"
 
 	bk.term.decorate "%{${timeColor}}${loadTime}ms%{reset}"
+}
+
+registerPromptCommand() {
+	local command="$1"
+
+	if [[ -z $command ]]; then
+		return
+	fi
+
+	__DOTFILES_PROMPT_ADDITIONS+=("$command")
+}
+
+notifyInfo() {
+	local message="$1"
+	local moduleName
+	moduleName="$(basename "$(caller | awk '{print $2}')")"
+
+	bk.term.decorate "%{dim}ℹ ${moduleName} info: ${message}%{reset}\n"
 }
 
 notifyLoaded() {
@@ -50,6 +70,7 @@ notifyWarn() {
 }
 
 if [[ ${VERBOSITY-} == '' ]]; then
+	notifyInfo() { return; }
 	notifyLoaded() { return; }
 	notifySkipped() { return; }
 

@@ -66,6 +66,10 @@ promptCommand() {
 
 	__git_ps1 "${symbol} ${directoryColor}${directory}${repoColor}" "${e_reset} " " %s"
 	update_terminal_cwd 2>/dev/null
+
+	for command in "${__DOTFILES_PROMPT_ADDITIONS[@]}"; do
+		eval "$command"
+	done
 }
 
 PROMPT_COMMAND='promptCommand'
