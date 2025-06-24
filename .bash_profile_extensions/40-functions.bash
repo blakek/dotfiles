@@ -106,6 +106,13 @@ backup() {
 }
 
 ##
+# Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
+##
+brew-leaves-outdated() {
+	comm -12 <(brew outdated | sort) <(brew leaves | sort)
+}
+
+##
 # Simple countdown timer
 ##
 countdown() {
