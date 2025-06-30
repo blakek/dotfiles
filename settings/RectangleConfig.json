@@ -269,6 +269,14 @@
       "keyCode" : 123,
       "modifierFlags" : 1835008
     },
+    "reflowTodo" : {
+      "keyCode" : 45,
+      "modifierFlags" : 786432
+    },
+    "restore" : {
+      "keyCode" : 51,
+      "modifierFlags" : 786432
+    },
     "rightHalf" : {
       "keyCode" : 30,
       "modifierFlags" : 1835008
@@ -276,7 +284,11 @@
     "smaller" : {
       "keyCode" : 27,
       "modifierFlags" : 1835008
+    },
+    "toggleTodo" : {
+      "keyCode" : 11,
+      "modifierFlags" : 786432
     }
   },
-  "version" : "93"
+  "version" : "94"
 }
