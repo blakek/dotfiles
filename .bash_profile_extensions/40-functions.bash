@@ -233,6 +233,43 @@ shrug() {
 }
 
 ##
+# Trashes all node_modules found in a repo
+##
+trash-node-modules() {
+	local repoRoot
+	repoRoot="$(git rev-parse --show-toplevel)"
+
+	mapfile -t filesToRemove < <(find "$repoRoot" -type d -name 'node_modules' -prune -print0 | xargs -0 -n 1 realpath)
+
+	if [[ ${#filesToRemove[@]} -eq 0 ]]; then
+		echo "No node_modules found in the repository"
+		return
+	fi
+
+	echo "Found ${#filesToRemove[@]} node_modules directories to remove:"
+	for file in "${filesToRemove[@]}"; do
+		echo "  - $file"
+	done
+
+	read -p "Are you sure you want to remove these directories? [Y/n] " -n 1 -r
+	echo
+
+	if [[ -n $REPLY && ! $REPLY =~ ^[Yy]$ ]]; then
+		echo "Aborting."
+		return
+	fi
+
+	local removeCommand="rm -rf"
+
+	# Removing using `trash` can seem _way_ faster than `rm -rf`
+	if isInstalled trash; then
+		removeCommand="trash"
+	fi
+
+	$removeCommand "${filesToRemove[@]}"
+}
+
+##
 # Prints which process is using the given port
 ##
 whyPortUsed() {
