@@ -3,6 +3,7 @@
 declare -a pathAdditions=(
 	# My personal scripts
 	"${HOME}/bin"
+	"${HOME}/.local/bin"
 	"${DOTFILES_ROOT}/bin"
 	"${DEV_ROOT}/scratchpad/bin"
 	"${DEV_ROOT}/temp/bin"
