@@ -1,7 +1,15 @@
 # Fun prompt symbols:
-# ❯ ▲ ➤ ➥ $ %
-# ☯︎ ✳︎ ⌘ ⌥ ﹠
-# ⚡︎ ƒ ⍺ ß ⌬
+# $ % #
+# → ⇒ ↪︎ ⇨ ⇾ ➔ ➤ ➢ ➥ ⏵ ⟶ ⟿
+# ❯ › »
+# ▸ ▹ ►
+# ▲ ﹠
+# ∴ ∵ ∷ ∇ ∘
+# ✦ ✧ ✱ ✲ ✳︎ ⁂
+# ◉ ◎ ◌ ◍
+# ■ ▪ □ ▫
+# ⌘ ⌥ ◊ ◈ ⚛ ⚡︎ ☄ ☢ ☣
+# ƒ ⍺ ß ⌬ λ
 
 if ! import "${HOME}/.git-prompt.sh"; then
 	notifyWarn "${HOME}/.git-prompt.sh not found"
