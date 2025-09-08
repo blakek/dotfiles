@@ -300,15 +300,17 @@ projectManagerForProject() {
 yeet() {
 	local port=""
 	local packageManager=""
+	local path="${1:-/}"
+
 	port="${PORT:-$(portForProject)}"
 	packageManager="$(projectManagerForProject)"
 
 	git pull --prune --quiet
 	$packageManager install --silent
-	$packageManager run dev --silent &
+	$packageManager run dev &
 
 	waitForPort "$port"
-	open "http://localhost:${port}/"
+	open "http://localhost:${port}${path}"
 
 	fg
 }
