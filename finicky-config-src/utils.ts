@@ -15,19 +15,24 @@ export const KNOWN_SLACK_TEAMS = {
   zapier: "T024VA8T9",
 } as const;
 
+const slackMessageType = new Set(["archives", "messages"]);
+
+const slackChannelType = {
+  C: "public",
+  D: "direct",
+  G: "private",
+} as const;
+
 function getSlackChannelType(
   channelID: string
 ): "public" | "private" | "direct" | undefined {
-  switch (channelID[0]) {
-    case "D":
-      return "direct";
-    case "G":
-      return "private";
-    case "C":
-      return "public";
-    default:
-      return undefined;
+  const prefix = channelID[0];
+
+  if (!(prefix in slackChannelType)) {
+    return undefined;
   }
+
+  return slackChannelType[prefix as keyof typeof slackChannelType];
 }
 
 function isKnownSlackTeam(
@@ -53,9 +58,7 @@ export function extractSlackUrlParts(url: URL): SlackUrlParts | undefined {
     .split("/")
     .filter(Boolean) as (string | undefined)[];
 
-  const knownTypes = ["archives", "messages"];
-
-  if (!knownTypes.includes(type) || !channel) {
+  if (!type || !slackMessageType.has(type) || !channel) {
     return undefined;
   }
 
