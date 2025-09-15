@@ -49,7 +49,10 @@ export function withProtocol(url: URL, protocol: string): URL {
 }
 
 export function extractSlackUrlParts(url: URL): SlackUrlParts | undefined {
-  const [type, channel, messagePath] = url.pathname.split("/").filter(Boolean);
+  const [type, channel, messagePath] = url.pathname
+    .split("/")
+    .filter(Boolean) as (string | undefined)[];
+
   const knownTypes = ["archives", "messages"];
 
   if (!knownTypes.includes(type) || !channel) {
@@ -63,7 +66,9 @@ export function extractSlackUrlParts(url: URL): SlackUrlParts | undefined {
 
   // Removes the leading `p` + converts to timestamp format
   // e.g. p1234567890000000 -> 1234567890.000000
-  const message = messagePath.slice(1, 11) + "." + messagePath.slice(11);
+  const message = messagePath
+    ? messagePath.slice(1, 11) + "." + messagePath.slice(11)
+    : undefined;
 
   return {
     channel,

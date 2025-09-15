@@ -123,4 +123,29 @@ describe("openSlackLinksInApp", () => {
       searchParams: Object.fromEntries(transformedUrl.searchParams),
     }).toMatchObject(expected);
   });
+
+  it("should handle channel links without a message", () => {
+    const url = new URL("https://zapier.slack.com/archives/C09CYV2GLR5");
+    const expected = {
+      protocol: "slack:",
+      hostname: "channel",
+      pathname: "",
+      search: {
+        team: KNOWN_SLACK_TEAMS.zapier,
+        id: "C09CYV2GLR5",
+      },
+    };
+
+    const matcher = openSlackLinksInApp.match;
+    const matches = matchResult(matcher, url);
+    const transformedUrl = getTransformedUrl(openSlackLinksInApp, url);
+
+    expect(matches).toBe(true);
+    expect(transformedUrl.protocol).toBe(expected.protocol);
+    expect(transformedUrl.hostname).toBe(expected.hostname);
+    expect(transformedUrl.pathname).toBe(expected.pathname);
+    expect(Object.fromEntries(transformedUrl.searchParams)).toMatchObject(
+      expected.search
+    );
+  });
 });
