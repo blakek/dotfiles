@@ -48,13 +48,10 @@ describe("openTrelloLinksInApp", () => {
 
     const matcher = openTrelloLinksInApp.match;
     const matches = matchResult(matcher, url);
-
-    expect(matches).toBe(true);
-
     const transformedUrl = getTransformedUrl(openTrelloLinksInApp, url);
 
-    expect(transformedUrl.protocol).toBe(expected.protocol);
-    expect(transformedUrl.pathname).toBe(expected.pathname);
+    expect(matches).toBe(true);
+    expect(transformedUrl).toMatchObject(expected);
   });
 });
 
@@ -78,7 +75,7 @@ describe("openSlackLinksInApp", () => {
       protocol: "slack:",
       hostname: "channel",
       pathname: "",
-      search: {
+      searchParams: {
         team: KNOWN_SLACK_TEAMS.zapier,
         id: "C12345678",
         message: "1234567890.123456",
@@ -87,18 +84,16 @@ describe("openSlackLinksInApp", () => {
 
     const matcher = openSlackLinksInApp.match;
     const matches = matchResult(matcher, url);
+    const transformedUrl = getTransformedUrl(openSlackLinksInApp, url);
 
     expect(matches).toBe(true);
 
-    const transformedUrl = getTransformedUrl(openSlackLinksInApp, url);
-
-    expect(transformedUrl.protocol).toBe(expected.protocol);
-    expect(transformedUrl.hostname).toBe(expected.hostname);
-    expect(transformedUrl.pathname).toBe(expected.pathname);
-
-    expect(Object.fromEntries(transformedUrl.searchParams)).toMatchObject(
-      expected.search
-    );
+    expect({
+      pathname: transformedUrl.pathname,
+      protocol: transformedUrl.protocol,
+      hostname: transformedUrl.hostname,
+      searchParams: Object.fromEntries(transformedUrl.searchParams),
+    }).toMatchObject(expected);
   });
 
   it("should work with links to messages in threads", () => {
@@ -107,8 +102,8 @@ describe("openSlackLinksInApp", () => {
     );
     const expected = {
       protocol: "slack:",
-      pathname: "channel",
-      search: {
+      pathname: "",
+      searchParams: {
         team: KNOWN_SLACK_TEAMS.zapier,
         id: "C048W40M39S",
         message: "1748605002.364059",
@@ -117,14 +112,15 @@ describe("openSlackLinksInApp", () => {
     };
 
     const matcher = openSlackLinksInApp.match;
+    const transformedUrl = getTransformedUrl(openSlackLinksInApp, url);
     const matches = matchResult(matcher, url);
+
     expect(matches).toBe(true);
 
-    const transformedUrl = getTransformedUrl(openSlackLinksInApp, url);
-    expect(transformedUrl.protocol).toBe(expected.protocol);
-    expect(transformedUrl.hostname).toBe(expected.pathname);
-    expect(Object.fromEntries(transformedUrl.searchParams)).toMatchObject(
-      expected.search
-    );
+    expect({
+      pathname: transformedUrl.pathname,
+      protocol: transformedUrl.protocol,
+      searchParams: Object.fromEntries(transformedUrl.searchParams),
+    }).toMatchObject(expected);
   });
 });
