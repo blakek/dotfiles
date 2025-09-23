@@ -302,17 +302,27 @@ yeet() {
 	local packageManager=""
 	local path="${1:-/}"
 
+	# TODO: Add a flag to open in browser
+	local shouldOpenInBrowser=false
+
 	port="${PORT:-$(portForProject)}"
 	packageManager="$(projectManagerForProject)"
 
 	git pull --prune --quiet
 	$packageManager install --silent
-	$packageManager run dev &
 
-	waitForPort "$port"
-	open "http://localhost:${port}${path}"
+	local devCommand="$packageManager run dev"
 
-	fg
+	if $shouldOpenInBrowser; then
+		$devCommand &
+
+		waitForPort "$port"
+		open "http://localhost:${port}${path}"
+
+		fg
+	else
+		$devCommand
+	fi
 }
 
 notifyLoaded
