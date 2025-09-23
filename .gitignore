@@ -18,3 +18,9 @@ Thumbs.db
 
 # Special overrides I don't want to commit
 hidden_*/
+
+# My notes, experiments, tests, etc.
+/deleteme*
+/junk*
+/scratch*
+/notes/
