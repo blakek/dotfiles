@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+##
+# Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
+##
+
+# Lines starting with "#:" are extracted for help text
+
+#:  * `outdated-leaves` [<options>`]
+#:
+#:  Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
+
+comm -12 <(brew outdated | sort) <(brew leaves | sort)
+
