@@ -6,7 +6,7 @@
 
 # Lines starting with "#:" are extracted for help text
 
-#:  * `outdated-leaves` [<options>`]
+#:  * `outdated-leaves` [<options>]
 #:
 #:  Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
 
