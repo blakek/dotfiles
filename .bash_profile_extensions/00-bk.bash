@@ -144,7 +144,13 @@ bk.term.ansi() {
 #   bk.term.decorate '███%{cursor_down}%{cursor_left}███\n'
 ##
 bk.term.decorate() {
-	local string="$1"
+	local string
+	if (( $# > 0 )); then
+		string="$*"
+	else
+		# Slurp stdin (preserves newlines)
+		string="$(cat)"
+	fi
 
 	# Replace %{...} with the actual codes
 	while [[ $string =~ ^(.*)%\{([^}]+)\}(.*)$ ]]; do
