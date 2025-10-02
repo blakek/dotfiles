@@ -54,7 +54,7 @@ show_usage() {
 		$(bold USAGE)
 
 		  Show usage information:
-		  $ git conflicts --help
+		  $ git conflicts [-h|help]
 
 		  Show conflicts between two branches:
 		  $ git conflicts [<source_branch>] [<target_branch>]
@@ -67,8 +67,8 @@ show_usage() {
 		  -c, --count
 		    Show only a count of conflicting files
 
-		  -h, --help
-		    Show this help message and exit
+		  -h, help
+		    Show this help message and exit. Note, \`--help\` is supported but is redirected by git to \`git help\`.
 
 		  -v, --version
 		    Show version information and exit
@@ -117,7 +117,7 @@ git-conflicts() {
 			-c | --count)
 				count_only="yes"
 				;;
-			-h | --help)
+			-h | --help | help)
 				show_usage
 				return 0
 				;;
