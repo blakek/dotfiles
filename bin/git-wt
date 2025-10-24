@@ -1,0 +1,195 @@
+#!/usr/bin/env bash
+
+##
+# Helpers for git worktrees
+##
+
+default_path_root="${HOME}/dev"
+
+bold() {
+	format_bold='\033[1m'
+	format_reset='\033[0m'
+	echo -e "${format_bold}$1${format_reset}"
+}
+
+italic() {
+	format_italic='\033[3m'
+	format_reset='\033[0m'
+	echo -e "${format_italic}$1${format_reset}"
+}
+
+error() {
+	format_red='\033[0;31m'
+	format_reset='\033[0m'
+	echo -e "${format_red}Error: $1${format_reset}" 1>&2
+}
+
+panic() {
+	error "$1"
+	exit 1
+}
+
+green() {
+	format_green='\033[0;32m'
+	format_reset='\033[0m'
+	echo -e "${format_green}$1${format_reset}"
+}
+
+success() {
+	format_green='\033[0;32m'
+	format_reset='\033[0m'
+	echo -e "${format_green}✓${format_reset} $1"
+}
+
+show_usage() {
+	cat <<-END
+		$(italic git-wt) - Helpers for git worktrees
+
+		$(bold USAGE)
+		  $ git wt <command> [options]
+
+		$(bold COMMANDS)
+		  add: Create a new worktree for a branch
+		  help: Show this help message
+		  remove: Remove the worktree at a specified path
+	END
+}
+
+is_git_repo() {
+	git rev-parse --is-inside-work-tree &> /dev/null
+	return $?
+}
+
+assert_git_repo() {
+	if ! is_git_repo; then
+		panic "Current directory is not a git repository"
+	fi
+}
+
+get_repo_name() {
+	git rev-parse --show-toplevel 2> /dev/null | xargs basename
+}
+
+get_default_path() {
+	local branch_name="${1:?Branch name is required}"
+
+	assert_git_repo
+
+	local repo_name
+	repo_name=$(get_repo_name)
+
+	echo "${default_path_root}/${repo_name}__${branch_name}"
+}
+
+command_add() {
+	local branch_name="${1:?Branch name is required}"
+	local path="${2:-$(get_default_path "${branch_name}")}"
+
+	if [[ "$branch_name" == "help" || "$branch_name" == "-h" || "$branch_name" == "--help" ]]; then
+		help_add
+		return 0
+	fi
+
+	assert_git_repo
+
+	git fetch origin "${branch_name}" || panic "Failed to fetch branch '${branch_name}' from origin"
+	git worktree add -B "${branch_name}" "${path}" "origin/${branch_name}" || panic "Failed to create worktree for branch '${branch_name}' at path '${path}'"
+	success "${path} -> origin/${branch_name}"
+}
+
+help_add() {
+	local default_path
+
+	if is_git_repo; then
+		default_path=$(get_default_path "<branch>")
+	else
+		default_path="${default_path_root}/<repository-name>__<branch>"
+	fi
+
+	cat <<-END
+		$(italic git wt add) - Create a new worktree for a branch
+
+		$(bold USAGE)
+		  $ git wt add <branch> [path]
+
+		$(bold ARGUMENTS)
+		  branch: The name of the branch to create the worktree for
+		  path: The path to create the worktree at (optional)
+		        Default: ${default_path}
+	END
+}
+
+command_remove() {
+	local path="${1:?Path is required}"
+
+	if [[ "$path" == "help" || "$path" == "-h" || "$path" == "--help" ]]; then
+		help_remove
+		return 0
+	fi
+
+	assert_git_repo
+
+	git worktree remove "${path}" || panic "Failed to remove worktree at path '${path}'"
+	# Prune stale metadata after removing worktree
+	git worktree prune
+	echo "Worktree at path '${path}' removed"
+}
+
+help_remove() {
+	cat <<-END
+		$(italic git wt remove) - Remove a worktree
+
+		$(bold USAGE)
+		  $ git wt remove <path>
+
+		$(bold ARGUMENTS)
+		  path: The path to the worktree to remove
+	END
+}
+
+command_help() {
+	local topic="${1:-}"
+	case "${topic}" in
+		add)
+			help_add
+			;;
+		remove)
+			help_remove
+			;;
+		"")
+			show_usage
+			;;
+		*)
+			error "Unknown help topic: '${topic}'"
+			show_usage
+			exit 1
+			;;
+	esac
+}
+
+main() {
+	local command="${1:-help}"
+	shift || true
+
+	case "${command}" in
+		add)
+			command_add "$@"
+			;;
+		remove)
+			command_remove "$@"
+			;;
+		help)
+			command_help "$@"
+			;;
+		-h|--help)
+			show_usage
+			;;
+		*)
+			error "Unknown command: '${command}'"
+			show_usage
+			exit 1
+			;;
+	esac
+}
+
+main "$@"
