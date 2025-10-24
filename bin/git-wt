@@ -51,6 +51,7 @@ show_usage() {
 		$(bold COMMANDS)
 		  add: Create a new worktree for a branch
 		  help: Show this help message
+		  list: List all worktrees
 		  remove: Remove the worktree at a specified path
 	END
 }
@@ -119,6 +120,21 @@ help_add() {
 	END
 }
 
+command_list() {
+	assert_git_repo
+
+	git worktree list
+}
+
+help_list() {
+	cat <<-END
+		$(italic git wt list) - List all worktrees
+
+		$(bold USAGE)
+		  $ git wt list
+	END
+}
+
 command_remove() {
 	local path="${1:?Path is required}"
 
@@ -153,6 +169,9 @@ command_help() {
 		add)
 			help_add
 			;;
+		list)
+			help_list
+			;;
 		remove)
 			help_remove
 			;;
@@ -174,6 +193,9 @@ main() {
 	case "${command}" in
 		add)
 			command_add "$@"
+			;;
+		list)
+			command_list "$@"
 			;;
 		remove)
 			command_remove "$@"
