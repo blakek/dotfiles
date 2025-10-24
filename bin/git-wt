@@ -136,7 +136,7 @@ help_list() {
 }
 
 command_remove() {
-	local path="${1:?Path is required}"
+	local path="$1"
 
 	if [[ "$path" == "help" || "$path" == "-h" || "$path" == "--help" ]]; then
 		help_remove
@@ -144,6 +144,11 @@ command_remove() {
 	fi
 
 	assert_git_repo
+
+	# Allow defaulting to the current worktree if no path is provided
+	if [[ -z "$path" ]]; then
+		path="$(get_repo_name)"
+	fi
 
 	git worktree remove "${path}" || panic "Failed to remove worktree at path '${path}'"
 	# Prune stale metadata after removing worktree
@@ -156,10 +161,10 @@ help_remove() {
 		$(italic git wt remove) - Remove a worktree
 
 		$(bold USAGE)
-		  $ git wt remove <path>
+		  $ git wt remove [path]
 
 		$(bold ARGUMENTS)
-		  path: The path to the worktree to remove
+		  path: The path to the worktree to remove. If not specified, the current worktree will be removed.
 	END
 }
 
