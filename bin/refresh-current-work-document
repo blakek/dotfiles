@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+bold() {
+	printf '\e[1m%s\e[0m' "$1"
+}
+
+italic() {
+	printf '\e[3m%s\e[0m' "$1"
+}
+
+error() {
+	printf '\e[31mError: %s\e[0m\n' "$1" >&2
+}
+
+panic() {
+	error "$1"
+	exit 1
+}
+
+showUsage() {
+	cat <<-END
+		$(italic refresh-current-work-document) updates the current work log.
+
+		$(bold USAGE)
+		  refresh-current-work-document [help] [<date>]
+
+		$(bold EXAMPLES)
+		  # Refresh the current work document
+		  refresh-current-work-document
+
+		  # Refresh the work document for a specific date
+		  refresh-current-work-document 2024-06-15
+
+		  # Show help information
+		  refresh-current-work-document help
+	END
+}
+
+main() {
+	local dateArg
+	local refreshCommand="shortcuts run 319E4A29-BD02-41CD-B1E8-00C955F36062"
+
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			help | -h | --help)
+				showUsage
+				return
+				;;
+
+			*)
+				local dateArg="$1"
+				;;
+		esac
+		shift
+	done
+
+
+	if [[ -n "$dateArg" ]]; then
+		$refreshCommand <<< "$dateArg"
+	else
+		$refreshCommand
+	fi
+}
+
+main "$@"
