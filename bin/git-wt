@@ -50,6 +50,7 @@ show_usage() {
 
 		$(bold COMMANDS)
 		  add: Create a new worktree for a branch
+		  go: \`cd\` into the worktree for a branch
 		  help: Show this help message
 		  list: List all worktrees
 		  remove: Remove the worktree at a specified path
@@ -69,6 +70,20 @@ assert_git_repo() {
 
 get_repo_name() {
 	git rev-parse --show-toplevel 2> /dev/null | xargs basename
+}
+
+get_worktree_path_for_branch() {
+	local branch_name="${1:?Branch name is required}"
+
+	assert_git_repo
+
+	local worktree_path
+	worktree_path=$(git worktree list --porcelain | awk -v branch="refs/heads/${branch_name}" '
+		$1 == "worktree" { path = $2 }
+		$1 == "branch" && $2 == branch { print path }
+	')
+
+	echo "${worktree_path}"
 }
 
 get_default_path() {
@@ -117,6 +132,40 @@ help_add() {
 		  branch: The name of the branch to create the worktree for
 		  path: The path to create the worktree at (optional)
 		        Default: ${default_path}
+	END
+}
+
+command_go() {
+	local branch_name="${1:?Branch name is required}"
+
+	if [[ "$branch_name" == "help" || "$branch_name" == "-h" || "$branch_name" == "--help" ]]; then
+		help_go
+		return 0
+	fi
+
+	assert_git_repo
+
+	local worktree_path
+	worktree_path=$(get_worktree_path_for_branch "${branch_name}")
+
+	if [[ -z "${worktree_path}" ]]; then
+		panic "No worktree found for branch '${branch_name}'"
+	fi
+
+	echo "Changing directory to worktree for branch '${branch_name}':"
+	echo "$(green "${worktree_path}")"
+	cd "${worktree_path}" || panic "Failed to change directory to '${worktree_path}'"
+}
+
+help_go() {
+	cat <<-END
+		$(italic git wt go) - Change directory to the worktree for a branch
+
+		$(bold USAGE)
+		  $ git wt go <branch>
+
+		$(bold ARGUMENTS)
+		  branch: The name of the branch to go to
 	END
 }
 
@@ -174,6 +223,9 @@ command_help() {
 		add)
 			help_add
 			;;
+		go)
+			help_go
+			;;
 		list)
 			help_list
 			;;
@@ -198,6 +250,9 @@ main() {
 	case "${command}" in
 		add)
 			command_add "$@"
+			;;
+		go)
+			command_go "$@"
 			;;
 		list)
 			command_list "$@"
