@@ -9,23 +9,23 @@ default_path_root="${HOME}/dev"
 bold() {
 	format_bold='\033[1m'
 	format_reset='\033[0m'
-	echo -e "${format_bold}$1${format_reset}"
+	echo -e "${format_bold}$*${format_reset}"
 }
 
 italic() {
 	format_italic='\033[3m'
 	format_reset='\033[0m'
-	echo -e "${format_italic}$1${format_reset}"
+	echo -e "${format_italic}$*${format_reset}"
 }
 
 error() {
 	format_red='\033[0;31m'
 	format_reset='\033[0m'
-	echo -e "${format_red}Error: $1${format_reset}" 1>&2
+	echo -e "${format_red}Error: $*${format_reset}" 1>&2
 }
 
 panic() {
-	error "$1"
+	error "$*"
 	exit 1
 }
 
@@ -54,6 +54,14 @@ show_usage() {
 		  help: Show this help message
 		  list: List all worktrees
 		  remove: Remove the worktree at a specified path
+
+		$(bold ALIAS COMMANDS)
+		  a: Alias for $(italic add)
+		  cd: Alias for $(italic go)
+		  create: Alias for $(italic add)
+		  l: Alias for $(italic list)
+		  ls: Alias for $(italic list)
+		  rm: Alias for $(italic remove)
 	END
 }
 
@@ -220,16 +228,16 @@ help_remove() {
 command_help() {
 	local topic="${1:-}"
 	case "${topic}" in
-		add)
+		add|a|create)
 			help_add
 			;;
 		go)
 			help_go
 			;;
-		list)
+		list|ls|l)
 			help_list
 			;;
-		remove)
+		remove|rm)
 			help_remove
 			;;
 		"")
@@ -248,16 +256,16 @@ main() {
 	shift || true
 
 	case "${command}" in
-		add)
+		add|a|create)
 			command_add "$@"
 			;;
 		go)
 			command_go "$@"
 			;;
-		list)
+		list|ls|l)
 			command_list "$@"
 			;;
-		remove)
+		remove|rm)
 			command_remove "$@"
 			;;
 		help)
