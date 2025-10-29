@@ -161,7 +161,7 @@ command_go() {
 	fi
 
 	echo "Changing directory to worktree for branch '${branch_name}':"
-	echo "$(green "${worktree_path}")"
+	green "${worktree_path}"
 	cd "${worktree_path}" || panic "Failed to change directory to '${worktree_path}'"
 }
 
