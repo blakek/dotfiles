@@ -48,6 +48,15 @@ alias ytc='yarn && yarn typecheck'
 # Faster parallelized "yarn" commands
 alias yp="bun run --filter '*'"
 
+# Podman/Docker compatibility
+if ! isInstalled docker && isInstalled podman; then
+	docker() {
+		podman "$@"
+	}
+  # docker-compose is handled by podman itself
+  export -f docker
+fi
+
 # Rsync with defaults to only rely on checksums
 alias rcp='rsync --archive --compress --checksum --human-readable --no-times --progress'
 
