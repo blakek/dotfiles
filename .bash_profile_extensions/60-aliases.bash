@@ -59,4 +59,7 @@ alias chrome-browser='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Ch
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
 
+# Fix nanocoder wanting to use `node` instead of `bun`
+alias nanocoder='bunx --bun @nanocollective/nanocoder nanocoder'
+
 notifyLoaded
