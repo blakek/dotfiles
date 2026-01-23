@@ -48,6 +48,15 @@ alias ytc='yarn && yarn typecheck'
 # Faster parallelized "yarn" commands
 alias yp="bun run --filter '*'"
 
+# Podman/Docker compatibility
+if ! isInstalled docker && isInstalled podman; then
+	docker() {
+		podman "$@"
+	}
+  # docker-compose is handled by podman itself
+  export -f docker
+fi
+
 # Rsync with defaults to only rely on checksums
 alias rcp='rsync --archive --compress --checksum --human-readable --no-times --progress'
 
@@ -58,5 +67,8 @@ alias brave-browser='/Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Brow
 alias chrome-browser='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
+
+# Fix nanocoder wanting to use `node` instead of `bun`
+alias nanocoder='bunx --bun @nanocollective/nanocoder nanocoder'
 
 notifyLoaded
