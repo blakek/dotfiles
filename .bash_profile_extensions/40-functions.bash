@@ -299,16 +299,41 @@ projectManagerForProject() {
 ##
 yeet() {
 	local port=""
+	port="${PORT:-$(portForProject)}"
+
 	local packageManager=""
+	packageManager="$(projectManagerForProject)"
+
 	local path="${1:-/}"
 
 	# TODO: Add a flag to open in browser
 	local shouldOpenInBrowser=false
 
-	port="${PORT:-$(portForProject)}"
-	packageManager="$(projectManagerForProject)"
+	local currentBranch
+	currentBranch="$(git rev-parse --abbrev-ref HEAD 2> /dev/null || echo '')"
 
-	git pull --prune --quiet
+	local hasRemoteBranch=false
+	if [[ $currentBranch != '' ]]; then
+		if git show-ref --verify --quiet "refs/remotes/origin/${currentBranch}"; then
+			hasRemoteBranch=true
+		fi
+	fi
+
+	# Only pull if there's a remote branch to pull from
+	if $hasRemoteBranch; then
+		git pull --prune --quiet
+	fi
+
+	# Ensure logged into the package manager if needed
+	local isLoggedIn=false
+	if $packageManager whoami &> /dev/null; then
+		isLoggedIn=true
+	fi
+
+	if ! $isLoggedIn; then
+		$packageManager login
+	fi
+
 	$packageManager install --silent
 
 	local devCommand="$packageManager run dev"
