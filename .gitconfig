@@ -53,9 +53,6 @@ trustctime = false
 # https://git-scm.com/docs/git-update-index#_untracked_cache
 untrackedCache = true
 
-[commit]
-template = ~/.git-commit-template
-
 [delta]
 line-numbers = true
 side-by-side = true
