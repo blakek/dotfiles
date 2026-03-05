@@ -4,6 +4,7 @@
 
 # I don't know how to use emacs
 export EDITOR='vim'
+export VISUAL='code --wait'
 # …but I do want emacs-style line-editing
 set -o emacs
 
