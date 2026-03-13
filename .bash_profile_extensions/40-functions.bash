@@ -83,6 +83,25 @@ downloadAudio() {
 }
 
 ##
+# Edit stdin payload in $VISUAL/$EDITOR and print the result to stdout
+# Usage: editpipe | whatever_command
+##
+editpipe() (
+  set -euo pipefail
+
+  local tmp
+  local -a ed
+  tmp="$(mktemp "${TMPDIR:-/tmp}/editpipe.XXXXXXXX")"
+  trap 'rm -f -- "$tmp"' EXIT INT TERM HUP
+
+  read -r -a ed <<< "${VISUAL:-${EDITOR:-vi}}"
+  "${ed[@]}" "$tmp" </dev/tty >/dev/tty
+
+  cat -- "$tmp"
+)
+
+
+##
 # Add defaults to the default GitHub Desktop CLI
 ##
 github() {
