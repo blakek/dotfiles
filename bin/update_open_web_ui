@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 update_open_web_ui() {
 	echo "Pulling latest Open Web UI Docker image..."
 	podman pull ghcr.io/open-webui/open-webui:main
@@ -10,4 +12,8 @@ update_open_web_ui() {
 	podman run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main
 }
 
-export -f update_open_web_ui
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	update_open_web_ui "$@"
+else
+	export -f update_open_web_ui
+fi

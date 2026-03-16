@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 export PYTORCH_ENABLE_MPS_FALLBACK=1
 
@@ -29,4 +29,8 @@ comfyui() {
 		"$@"
 }
 
-export -f comfyui
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	comfyui "$@"
+else
+	export -f comfyui
+fi
