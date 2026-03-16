@@ -57,7 +57,7 @@ panic() {
 # Sources required dependencies
 init() {
 	local bk_lib_location
-	bk_lib_location="$(realpath "$DOTFILES_ROOT/.bash_profile_extensions/00-bk.bash")"
+	bk_lib_location="$(realpath "$DOTFILES_ROOT/lib/bk.sh")"
 
 	source "$bk_lib_location" || panic "Failed to source bk library"
 }
