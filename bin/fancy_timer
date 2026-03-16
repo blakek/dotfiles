@@ -47,22 +47,19 @@ show_usage() {
 	END
 }
 
+panic() {
+	red="\033[31m"
+	reset="\033[0m"
+	echo -e "${red}Error: $*${reset}" >&2
+	exit 1
+}
+
 # Sources required dependencies
 init() {
-	# Check if `bk.term.decorate` is available, and if not, source it
-	if type bk.term.decorate &> /dev/null; then
-		return
-	fi
-
 	local bk_lib_location
 	bk_lib_location="$(realpath "$DOTFILES_ROOT/.bash_profile_extensions/00-bk.bash")"
 
-	if [[ -f "$bk_lib_location" ]]; then
-		source "$bk_lib_location"
-	else
-		echo "Error: Could not find bk library at $bk_lib_location" >&2
-		exit 1
-	fi
+	source "$bk_lib_location" || panic "Failed to source bk library"
 }
 
 ##
@@ -118,6 +115,8 @@ format_time() {
 }
 
 fancy_timer() {
+	init
+
 	local time=0
 	local message="%r remaining"
 	local progress=true
