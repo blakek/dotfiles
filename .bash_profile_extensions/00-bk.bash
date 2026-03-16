@@ -164,3 +164,10 @@ bk.term.decorate() {
 
 	echo -en "$string"
 }
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+	# If this file is being sourced, export the functions
+	export -f bk.hex_to_rgb
+	export -f bk.term.ansi
+	export -f bk.term.decorate
+fi

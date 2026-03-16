@@ -47,6 +47,24 @@ show_usage() {
 	END
 }
 
+# Sources required dependencies
+init() {
+	# Check if `bk.term.decorate` is available, and if not, source it
+	if type bk.term.decorate &> /dev/null; then
+		return
+	fi
+
+	local bk_lib_location
+	bk_lib_location="$(realpath "$DOTFILES_ROOT/.bash_profile_extensions/00-bk.bash")"
+
+	if [[ -f "$bk_lib_location" ]]; then
+		source "$bk_lib_location"
+	else
+		echo "Error: Could not find bk library at $bk_lib_location" >&2
+		exit 1
+	fi
+}
+
 ##
 # Parse a time string (e.g. 1h30m20s) into seconds
 ##
@@ -163,7 +181,7 @@ fancy_timer() {
 		# Calculate the message
 		local message_string=${message//\%r/$(format_time $remaining_time)}
 		message_string=${message_string//\%e/$(format_time $elapsed_time)}
-		message_string=${message_string//\%t/$(format_time $time)}
+		message_string=${message_string//\%t/$(format_time "$time")}
 
 		if $progress; then
 			# Calculate the progress. Note that we invert the percentage by not subtracting from 100.
@@ -194,7 +212,11 @@ fancy_timer() {
 	done
 
 	# Print the elapsed time
-	printf "\r%s elapsed%b\n" "$(format_time $time)" "$ansi_clear_line"
+	printf "\r%s elapsed%b\n" "$(format_time "$time")" "$ansi_clear_line"
 }
 
-export -f fancy_timer
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	fancy_timer "$@"
+else
+	export -f fancy_timer
+fi
