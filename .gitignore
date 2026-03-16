@@ -13,6 +13,9 @@ Thumbs.db
 .Spotlight-V100
 .Trashes
 
+# Node.js modules
+node_modules/
+
 # Hidden config files won't be added to this repo
 .bash_profile_extensions/.*
 
