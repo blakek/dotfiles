@@ -77,7 +77,7 @@ You can find the details in the [`finicky-config-src/README.md`](finicky-config-
 brew install --cask finicky
 # Open System Preferences > General > Default web browser > Finicky
 # Symlink the Finicky config file
-ln -s /path/to/dotfiles/finicky-config-src/finicky.ts ~/.finicky.ts
+ln -s "${DOTFILES_ROOT}/finicky-config-src/finicky.ts" "${HOME}/.finicky.ts"
 ```
 
 ### Rectangle

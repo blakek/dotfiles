@@ -7,10 +7,6 @@
   "peerDependencies": {
     "typescript": "^5.5.3"
   },
-  "scripts": {
-    "build": "bun run build.ts",
-    "dev": "bun run --watch build.ts"
-  },
   "type": "module",
   "dependencies": {
     "finicky": "https://github.com/johnste/finicky"
