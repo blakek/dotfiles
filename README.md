@@ -2,21 +2,21 @@
 
 This repository contains personal configuration files (dotfiles) and scripts to set up a development environment on macOS and Linux machines. It includes settings and helpers for:
 
--   Shell (Bash v5+)
--   Git
--   tmux
--   Finicky (browser routing mainly used to skip opening a browser for some apps)
--   Rectangle (window management)
--   Various utility scripts and helpers
+- Shell (Bash v5+)
+- Git
+- tmux
+- Finicky (browser routing mainly used to skip opening a browser for some apps)
+- Rectangle (window management)
+- Various utility scripts and helpers
 
 It also can optionally install macOS apps to get started using Homebrew / mas.
 
 ## Prerequisites
 
--   Git
--   Bash (v5+ recommended)
--   [Homebrew](https://brew.sh/) (for macOS) or your preferred Linux package manager.
--   [Node.js](https://nodejs.org/) (optional, for npm packages and Finicky config).
+- Git
+- Bash (v5+ recommended)
+- [Homebrew](https://brew.sh/) (for macOS) or your preferred Linux package manager.
+- [Node.js](https://nodejs.org/) (optional, for npm packages and Finicky config).
 
 ## Getting Started
 
@@ -33,9 +33,9 @@ cd dotfiles
 ./bootstrap.bash
 ```
 
--   Use `--dry-run` to preview which files would be linked.
--   Use `--diff` to show differences in conflicting files.
--   Use `--force` to overwrite existing files without prompt.
+- Use `--dry-run` to preview which files would be linked.
+- Use `--diff` to show differences in conflicting files.
+- Use `--force` to overwrite existing files without prompt.
 
 ## macOS-specific Setup
 
@@ -86,9 +86,9 @@ Import the `settings/RectangleConfig.json` file in the [Rectangle](https://recta
 
 ## Utilities & Maintenance
 
--   `get-installed-files.sh`: Regenerate `Brewfile` and `npm-global.json` based on your current environment.
--   `bin/`: Custom helper scripts (e.g., `git-skim-diff`, `git-squash`).
--   `helpers/msec`: Timing helper for benchmark scripts.
+- `get-installed-files.sh`: Regenerate `Brewfile` and `npm-global.json` based on your current environment.
+- `bin/`: Custom helper scripts (e.g., `git-skim-diff`, `git-squash`).
+- `helpers/msec`: Timing helper for benchmark scripts.
 
 After adding or removing tools:
 
@@ -112,11 +112,11 @@ You can add your own extensions by creating a new file in `.bash_profile_extensi
 
 If you run into issues:
 
--   Build the `msec` helper script in the `helpers/msec` directory
-    -   This is technically optional but useful. You could alternatively comment out the line in `.bashrc` that uses it for timing.
-    -   It's a C program that just prints an accurate time. It shows how long it took to source a file and is useful if your prompt takes a while to load.
--   Uncomment `VERBOSITY=1` in `.bashrc` to enable verbose output during sourcing. This uses the `msec` helper + adds allows some extra debug output to help identify issues.
-    -   If you write your own extensions, you may use `notifyLoaded`, `notifySkipped`, and `notifyWarn` functions to log messages during sourcing. These automatically use the `msec` helper to show how long it took to load the file + can be helpful if your extension needs to conditionally load (`notifySkipped`) or warn about something unexpected (`notifyWarn`).
+- Build the `msec` helper script in the `helpers/msec` directory
+    - This is technically optional but useful. You could alternatively comment out the line in `.bashrc` that uses it for timing.
+    - It's a C program that just prints an accurate time. It shows how long it took to source a file and is useful if your prompt takes a while to load.
+- Uncomment `VERBOSITY=1` in `.bashrc` to enable verbose output during sourcing. This uses the `msec` helper + adds allows some extra debug output to help identify issues.
+    - If you write your own extensions, you may use `notifyLoaded`, `notifySkipped`, and `notifyWarn` functions to log messages during sourcing. These automatically use the `msec` helper to show how long it took to load the file + can be helpful if your extension needs to conditionally load (`notifySkipped`) or warn about something unexpected (`notifyWarn`).
 
 ## License
 
