@@ -24,11 +24,11 @@ const slackChannelType = {
 } as const;
 
 function getSlackChannelType(
-  channelID: string
+  channelID: string,
 ): "public" | "private" | "direct" | undefined {
   const prefix = channelID[0];
 
-  if (!(prefix in slackChannelType)) {
+  if (!prefix || !(prefix in slackChannelType)) {
     return undefined;
   }
 
@@ -36,7 +36,7 @@ function getSlackChannelType(
 }
 
 function isKnownSlackTeam(
-  team: string
+  team: string,
 ): team is keyof typeof KNOWN_SLACK_TEAMS {
   return team in KNOWN_SLACK_TEAMS;
 }
