@@ -1,0 +1,17 @@
+{
+  "name": "dotfiles",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "note-distance": "bun run scripts/note-distance/cli.ts",
+    "test": "bun test",
+    "typecheck": "bun tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
