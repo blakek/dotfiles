@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+"${DEV_ROOT}/skills/glean/scripts/glean" "$@"
