@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import * as Bun from "bun";
 import { parseArgs } from "node:util";
 import { calculateDistance, parseNote } from "./core";
 
