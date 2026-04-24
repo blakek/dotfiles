@@ -1,8 +1,82 @@
 #!/usr/bin/env bash
 
 ##
+# Returns the average ping time to a given host.
+# Usage: bk.net.averagePing <host> [count]
+##
+bk.net.averagePing() {
+	local -r host="${1:?Host is required}"
+	local -r count="${2:-5}"
+	local -r osType="$(bk.os.type)"
+
+	if [[ $osType == "macos" ]]; then
+		ping -c "$count" -i 0.5 "$host" | awk -F '/' '/round-trip/ {print $5}'
+	elif [[ $osType == "linux" ]]; then
+		ping -c "$count" -i 0.5 "$host" | awk -F '/' '/rtt/ {print $5}'
+	else
+		echo "Unknown OS type: $osType"
+	fi
+}
+
+##
+# Returns the HTTP status code for a given URL
+# Usage: bk.net.httpStatus <url>
+##
+bk.net.httpStatus() {
+	local -r url="${1:?URL is required}"
+	curl -s -o /dev/null -w "%{http_code}" "$url"
+}
+
+##
+# Returns the OS type as a lowercase string (e.g. "macos", "linux", "unknown")
+# Usage: bk.os.type
+##
+bk.os.type() {
+	local -r os="$(uname -s)"
+
+	case "$os" in
+		Darwin*) echo 'macos' ;;
+		Linux*) echo 'linux' ;;
+		*) echo "unknown" ;;
+	esac
+}
+
+##
+# Copies stdin to the clipboard using the first available clipboard utility (clipboard, pbcopy, xclip, wl-copy).
+# If no clipboard utility is found, it just prints stdin to stdout.
+# Usage: echo "text to copy" | copy [--no-print]
+# shellcheck disable=SC2120
+##
+copy() {
+	local -a clip_cmd=()
+
+	for cmd in clipboard pbcopy xclip wl-copy; do
+		if isInstalled "$cmd"; then
+			case "$cmd" in
+				xclip) clip_cmd=(xclip -selection clipboard) ;;
+				*) clip_cmd=("$cmd") ;;
+			esac
+			break
+		fi
+	done
+
+	if [[ ${#clip_cmd[@]} -eq 0 ]]; then
+		cat
+		return
+	fi
+
+	if [[ $1 == "--no-print" ]]; then
+		"${clip_cmd[@]}"
+		return
+	fi
+
+	tee /dev/tty | "${clip_cmd[@]}"
+}
+
+##
 # Return truthy/falsy value indicating if every argument is installed
 # (i.e. found in hash lookup)
+# Usage: isInstalled <command...>
 ##
 isInstalled() {
 	hash "$@" 2>/dev/null
@@ -10,6 +84,7 @@ isInstalled() {
 
 ##
 # Test if an element exists in an array.
+# Usage: arrayIncludes <arrayName> <searchValue>
 ##
 arrayIncludes() {
 	local -n array="$1"
@@ -26,6 +101,7 @@ arrayIncludes() {
 
 ##
 # Join a bash array using a delimiter (any string)
+# Usage: arrayJoin <delimiter> <firstElement> [elements...]
 ##
 arrayJoin() {
 	local -r delimiter="$1" firstElement="$2"
@@ -35,6 +111,7 @@ arrayJoin() {
 
 ##
 # Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
+# Usage: brew-leaves-outdated
 ##
 brew-leaves-outdated() {
 	comm -12 <(brew outdated | sort) <(brew leaves | sort)
@@ -42,6 +119,7 @@ brew-leaves-outdated() {
 
 ##
 # Simple countdown timer
+# Usage: countdown <durationInSeconds>
 ##
 countdown() {
 	local duration="$1"
@@ -50,20 +128,33 @@ countdown() {
 		sleep 1
 		((duration--))
 	done
+	# Clear the line after finishing
+	printf '\r%b' '\033[K'
 }
 
 ##
 # Create a data URL from a file
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+# Usage: dataurl <filePath>
 ##
 dataurl() {
+	if [[ -z $1 ]]; then
+		echo "Missing file path. Usage: dataurl <filePath>" >&2
+		return 1
+	fi
+
 	local mimeType=$(file -b --mime-type "$1")
 	if [[ $mimeType == text/* ]]; then
 		mimeType="${mimeType};charset=utf-8"
 	fi
+
 	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
 }
 
+##
+# Returns DNS information for a given domain and record types (defaults to A, AAAA, CNAME, MX, SOA, TXT)
+# Usage: dnsinfo <domain> [recordType...]
+##
 dnsinfo() {
 	local domain="$1"
 	shift
@@ -78,6 +169,10 @@ dnsinfo() {
 	dig +noall +answer +multiline "${recordsRequests[@]}"
 }
 
+##
+# Downloads audio from a given URL using yt-dlp
+# Usage: downloadAudio <url>
+##
 downloadAudio() {
 	yt-dlp --extract-audio --audio-format m4a "$@"
 }
@@ -112,6 +207,7 @@ github() {
 
 ##
 # Converts HTML to Markdown
+# Usage: html2md < input.html > output.md
 ##
 html2md() {
 	pandoc -f html -t gfm-raw_html -
@@ -119,6 +215,7 @@ html2md() {
 
 ##
 # Curl + pandoc browser
+# Usage: mdbrowser <url>
 ##
 mdbrowser() {
 	local -r url="$1"
@@ -129,23 +226,24 @@ mdbrowser() {
 
 ##
 # Prints and copies external IP address
+# Usage: myip
 ##
 myip() {
 	ip="$(curl --silent api.ipify.org)"
 
-	if isInstalled clipboard; then
-		echo "$ip" | tee /dev/tty | clipboard
-	elif isInstalled pbcopy; then
-		echo "$ip" | tee /dev/tty | pbcopy
-	else
-		echo "$ip"
+	if [[ $ip == '' ]]; then
+		echo "Couldn't fetch IP address"
+		return
 	fi
+
+	echo "$ip" | copy
 }
 
 ##
 # `o` with no arguments opens the current directory, otherwise opens the given
 # location
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+# Usage: o [fileOrDirectory...]
 ##
 o() {
 	if [ $# -eq 0 ]; then
@@ -157,36 +255,33 @@ o() {
 
 ##
 # Open projects
+# Usage: p
 ##
-isInstalled ipt && p() {
-	developDirectory="${HOME}/dev"
-	projectDirectory=$(ls "$developDirectory" | ipt -M 'Choose a project' -a)
+isInstalled gum && p() {
+	developDirectory=""${HOME}"/dev"
+	projectDirectory=$(ls "$developDirectory" | gum filter --placeholder "Select a project to open...")
 	if [[ $projectDirectory != '' ]]; then
-		cd "${developDirectory}/${projectDirectory}" && code .
+		cd """${developDirectory}""/""${projectDirectory}""" && code .
 	fi
 }
 
 ##
 # Print ¯\_(ツ)_/¯ and copy to clipboard
+# Usage: shrug
 ##
 shrug() {
-	if isInstalled clipboard; then
-		echo '¯\_(ツ)_/¯' | tee /dev/tty | clipboard
-	elif isInstalled pbcopy; then
-		echo '¯\_(ツ)_/¯' | tee /dev/tty | pbcopy
-	else
-		echo '¯\_(ツ)_/¯'
-	fi
+	echo '¯\_(ツ)_/¯' | copy
 }
 
 ##
 # Trashes all node_modules found in a repo
+# Usage: trash-node-modules
 ##
 trash-node-modules() {
 	local repoRoot
 	repoRoot="$(git rev-parse --show-toplevel)"
 
-	mapfile -t filesToRemove < <(find "$repoRoot" -type d -name 'node_modules' -prune -print0 | xargs -0 -n 1 realpath)
+	mapfile -t filesToRemove < <(find """$repoRoot""" -type d -name 'node_modules' -prune -print0 | xargs -0 -n 1 realpath)
 
 	if [[ ${#filesToRemove[@]} -eq 0 ]]; then
 		echo "No node_modules found in the repository"
@@ -195,7 +290,7 @@ trash-node-modules() {
 
 	echo "Found ${#filesToRemove[@]} node_modules directories to remove:"
 	for file in "${filesToRemove[@]}"; do
-		echo "  - $file"
+		echo "  - ""$file"""
 	done
 
 	read -p "Are you sure you want to remove these directories? [Y/n] " -n 1 -r
@@ -208,7 +303,7 @@ trash-node-modules() {
 
 	local removeCommand="rm -rf"
 
-	# Removing using `trash` can seem _way_ faster than `rm -rf`
+	# Removing using $(trash) can seem _way_ faster than $(rm -rf)
 	if isInstalled trash; then
 		removeCommand="trash"
 	fi
@@ -218,10 +313,11 @@ trash-node-modules() {
 
 ##
 # Prints which process is using the given port
+# Usage: whyPortUsed <port>
 ##
 whyPortUsed() {
-	local port="${1?Missing port}"
-	# Using `netstat` instead of `lsof` because it's faster
+	local port=""${1?Missing port}""
+	# Using $(netstat) instead of $(lsof) because it's faster
 	processID=$(
 		netstat -van |
 			# Find the line with the port
@@ -231,7 +327,7 @@ whyPortUsed() {
 	)
 
 	if [[ $processID == '' ]]; then
-		echo "Port ${port} doesn't seem to be used"
+		echo "Port ""${port}"" doesn't seem to be used"
 		return
 	fi
 
@@ -260,6 +356,7 @@ isInstalled tree && tre() {
 
 ##
 # Blocks until a port has something listening on it
+# Usage: waitForPort <port>
 ##
 waitForPort() {
 	local port="${1?Missing port}"
@@ -270,6 +367,11 @@ waitForPort() {
 	done
 }
 
+##
+# Returns the port for the current project by looking for it in the package.json file
+# Defaults to 3000 if not found
+# Usage: portForProject
+##
 portForProject() {
 	# Get the project root directory from git
 	local -r projectRoot="$(git rev-parse --show-toplevel)"
@@ -283,6 +385,11 @@ portForProject() {
 		sed -E 's/[-:=]//g' || echo 3000
 }
 
+##
+# Returns the package manager for the current repo by looking for known files.
+# Defaults to `bun` if none found.
+# Usage: projectManagerForProject
+##
 projectManagerForProject() {
 	# Get the project root directory from git
 	local -r projectRoot="$(git rev-parse --show-toplevel)"
@@ -315,8 +422,9 @@ projectManagerForProject() {
 
 ##
 # Start the dev server along with some helpful extras
+# Usage: yeet [path]
 ##
-yeet() {
+yeet() (
 	local port=""
 	port="${PORT:-$(portForProject)}"
 
@@ -367,6 +475,6 @@ yeet() {
 	else
 		$devCommand
 	fi
-}
+)
 
 notifyLoaded
