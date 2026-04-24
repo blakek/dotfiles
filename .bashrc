@@ -5,6 +5,7 @@ DOTFILES_ROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 export DOTFILES_ROOT
 
 # Set `VERBOSITY` to show debug messages in imported scripts
+# You can also test by using `VERBOSITY=1 bash -lc true`
 # VERBOSITY="1"
 
 # If a file exists and is not empty, source it. Otherwise, return an falsy value
