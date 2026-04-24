@@ -88,7 +88,6 @@ Import the `settings/RectangleConfig.json` file in the [Rectangle](https://recta
 
 - `get-installed-files.sh`: Regenerate `Brewfile` and `npm-global.json` based on your current environment.
 - `bin/`: Custom helper scripts (e.g., `git-skim-diff`, `git-squash`).
-- `helpers/msec`: Timing helper for benchmark scripts.
 
 After adding or removing tools:
 
@@ -112,11 +111,8 @@ You can add your own extensions by creating a new file in `.bash_profile_extensi
 
 If you run into issues:
 
-- Build the `msec` helper script in the `helpers/msec` directory
-    - This is technically optional but useful. You could alternatively comment out the line in `.bashrc` that uses it for timing.
-    - It's a C program that just prints an accurate time. It shows how long it took to source a file and is useful if your prompt takes a while to load.
-- Uncomment `VERBOSITY=1` in `.bashrc` to enable verbose output during sourcing. This uses the `msec` helper + adds allows some extra debug output to help identify issues.
-    - If you write your own extensions, you may use `notifyLoaded`, `notifySkipped`, and `notifyWarn` functions to log messages during sourcing. These automatically use the `msec` helper to show how long it took to load the file + can be helpful if your extension needs to conditionally load (`notifySkipped`) or warn about something unexpected (`notifyWarn`).
+- Uncomment `VERBOSITY=1` in `.bashrc` to enable verbose output during sourcing. This shows loading times + allows some extra debug output to help identify issues.
+    - If you write your own extensions, you may use `notifyLoaded`, `notifySkipped`, and `notifyWarn` functions to log messages during sourcing. These automatically track how long it took to load the file + can be helpful if your extension needs to conditionally load (`notifySkipped`) or warn about something unexpected (`notifyWarn`).
 
 ## License
 

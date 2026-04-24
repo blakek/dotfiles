@@ -5,9 +5,10 @@ __DOTFILES_PROMPT_ADDITIONS=()
 _printLoadTime() {
 	local startTime="$1"
 	local endTime
-	endTime=$(msec)
+	endTime=$(usec)
 
-	local loadTime=$((endTime - startTime))
+	local loadTimeUs=$((endTime - startTime))
+	local loadTime=$((loadTimeUs / 1000))
 
 	timeColor="dim"
 	[[ $loadTime -gt 200 ]] && timeColor="yellow"

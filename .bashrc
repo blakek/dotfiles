@@ -14,12 +14,20 @@ import() {
 	[ -r "$1" ] && source "$1"
 }
 
+##
+# Prints the current time in microseconds. This is used to track how long it takes to load each extension.
+##
+usec() {
+	# The decimal is locale-dependent, so we need to remove it to get a pure number
+	echo "${EPOCHREALTIME//[!0-9]/}"
+}
+
 # Load in extensions in a natural sort order
 for file in $(find -L "${HOME}/.bash_profile_extensions" -type f | sort -d); do
 	# Track start time if `VERBOSITY` is set
 	if [[ ${VERBOSITY-} != '' ]]; then
 		export DOTFILES_IMPORT_TIME_START
-		DOTFILES_IMPORT_TIME_START=$("${DOTFILES_ROOT}/helpers/msec/msec")
+		DOTFILES_IMPORT_TIME_START=$(usec)
 	fi
 
 	import "${file}"
