@@ -69,7 +69,4 @@ alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
 alias obsidian="/Applications/Obsidian.app/Contents/MacOS/Obsidian"
 
-# Fix nanocoder wanting to use `node` instead of `bun`
-alias nanocoder='bunx --bun @nanocollective/nanocoder nanocoder'
-
 notifyLoaded
