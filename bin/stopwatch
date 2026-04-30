@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+##
+# A nice stopwatch
+##
+
+error() {
+	printf '\e[31mError: %s\e[0m\n' "$1" >&2
+}
+
+panic() {
+	error "$1"
+	exit 1
+}
+
+get_color() {
+	case "$1" in
+		black) printf '\e[30m' ;;
+		gray) printf '\e[90m' ;;
+		red) printf '\e[31m' ;;
+		green) printf '\e[32m' ;;
+		yellow) printf '\e[33m' ;;
+		blue) printf '\e[34m' ;;
+		magenta) printf '\e[35m' ;;
+		cyan) printf '\e[36m' ;;
+		white) printf '\e[37m' ;;
+		reset) printf '\e[0m' ;;
+		italic) printf '\e[3m' ;;
+		bold) printf '\e[1m' ;;
+		*) printf '' ;; # Unknown color, return empty string
+	esac
+}
+
+style() {
+	local string
+
+	if (( $# > 0 )); then
+		string="$*"
+	else
+		string="$(cat)"
+	fi
+
+	while [[ $string =~ ^(.*)%\{([^}]+)\}(.*)$ ]]; do
+		before_match="${BASH_REMATCH[1]}"
+		color_name="${BASH_REMATCH[2]}"
+		color_code="$(get_color "$color_name")"
+		rest="${BASH_REMATCH[3]}"
+
+		string="${before_match}${color_code}${rest}"
+	done
+
+	printf '%b' "$string"
+}
+
+usec() {
+	echo "${EPOCHREALTIME//.}"
+}
+
+show_usage() {
+	style <<-END
+		%{italic}stopwatch%{reset} is a simple stopwatch
+
+		%{bold}USAGE%{reset}
+		  stopwatch [options]
+
+		%{bold}OPTIONS%{reset}
+		  --interval       Set the interval for the stopwatch ticks in milliseconds (default: 100)
+		  --no-controls    Disallow keyboard shortcuts for controlling the stopwatch
+		  --no-output      Suppress the final output when the stopwatch is stopped
+
+		%{bold}EXAMPLES%{reset}
+		  # Start the stopwatch
+		  stopwatch
+
+		  # Disallow keyboard shortcuts for controlling the stopwatch
+		  stopwatch --no-controls
+
+		  # Slow the stopwatch down to 1 second per tick
+		  stopwatch --interval 1000\n
+	END
+}
+
+print_keyboard_shortcuts() {
+	state="$1"
+
+	local start_stop_action
+	if [[ "$state" == "running" ]]; then
+		start_stop_action="stop"
+	else
+		start_stop_action="start"
+	fi
+
+	# printf "%b%s  •  %s  •  %s%b\n" "$(get_color gray)" "$start_stop" "$reset" "$quit" "$(get_color reset)"
+	local shortcuts=(
+		"s: ${start_stop_action}"
+		'r: reset'
+		'q: quit'
+	)
+
+	local formatted_shortcuts
+	formatted_shortcuts=$(array_join "  •  " "${shortcuts[@]}")
+	style "%{gray}${formatted_shortcuts}%{reset}"
+}
+
+# Joins a Bash array using a delimiter
+array_join() {
+	local delimiter="$1"
+	local first_element="$2"
+	shift 2
+	printf '%s' "$first_element" "${@/#/$delimiter}"
+}
+
+__render_block_active=0
+
+# Renders a block of text that can be updated in place. This clears everything below
+# the block, so it can be used to create a "live" section of the terminal output.
+live_block() {
+	local text="$1"
+
+	if (( ! __render_block_active )); then
+		printf '\033[s' # Save cursor position
+		printf '\033[?25l' # Hide cursor
+		__render_block_active=1
+	else
+		printf '\033[u' # Restore cursor position
+	fi
+
+	printf '%b' "$text"
+	printf '\033[J' # Clear everything below the current line
+}
+
+clear_live_block() {
+	if (( __render_block_active )); then
+		printf '\033[u\033[J' # Restore cursor position and clear everything below
+		printf '\033[?25h' # Show cursor
+		__render_block_active=0
+	fi
+}
+
+elapsed_time_s() {
+	local elapsed_usec=$(( $(usec) - start_time ))
+	printf '%s.%03ds' "$((elapsed_usec / 1000000))" "$(( (elapsed_usec % 1000000) / 1000 ))"
+}
+
+stopwatch() {
+	local interval=100
+	local show_controls="false" # Change to true when keyboard shortcuts are implemented
+	local show_output="true"
+	local state="running"
+
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			--no-controls)
+				show_controls="false"
+				shift
+				;;
+			--interval)
+				if [[ -z "$2" ]]; then
+					panic "Missing value for --interval"
+				fi
+				interval="$2"
+				shift 2
+				;;
+			--no-output)
+				show_output="false"
+				shift
+				;;
+			*)
+				error "Unknown option: $1"
+				showUsage
+				exit 1
+				;;
+		esac
+	done
+
+	# Clean up and show final output when the script exits, unless --no-output is specified
+	local trap_commands=()
+	trap_commands+=('clear_live_block')
+
+	if [[ "$show_output" == "true" ]]; then
+		trap_commands+=('elapsed_time_s')
+	fi
+
+	trap 'for cmd in "${trap_commands[@]}"; do $cmd; done' EXIT
+
+	start_time="$(usec)"
+
+	# Set up keyboard input handling
+
+	# Main loop:
+	# - Print updated elapsed time, by overwriting the previous line + clearing the rest
+	# - Handle keyboard input for controlling the stopwatch
+	# - Show keyboard shortcuts if enabled
+	while :; do
+		local elapsed_sec
+		elapsed_sec=$(elapsed_time_s)
+		local output="Time: ${elapsed_sec}"
+		if [[ "$show_controls" == "true" ]]; then
+			output+="\n\n$(print_keyboard_shortcuts "$state")"
+		fi
+
+		live_block "$output"
+
+		sleep "$(awk "BEGIN {print $interval / 1000}")"
+	done
+}
+
+start_time="$(usec)"
+stopwatch "$@"
