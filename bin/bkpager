@@ -6,7 +6,8 @@ isInstalled() {
 
 bkpager() {
 	if isInstalled gum; then
-		gum pager --show-line-numbers=false
+		# dimmed border
+		gum pager --show-line-numbers=false --border=rounded --border-foreground=#aaa
 	else
 		less -R
 	fi
