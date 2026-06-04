@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+isInstalled() {
+	hash "$@" 2>/dev/null
+}
+
+bkpager() {
+	if isInstalled gum; then
+		gum pager --show-line-numbers=false
+	else
+		less -R
+	fi
+}
+
+bkpager "$@"

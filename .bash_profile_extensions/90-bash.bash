@@ -24,6 +24,9 @@ export HISTIGNORE='exit'
 # Enable colors in macOS cli commands
 export CLICOLOR=1
 
+# Set my preferred pager with fallbacks
+export PAGER="bkpager"
+
 # Expand ! combinations
 bind Space:magic-space
 

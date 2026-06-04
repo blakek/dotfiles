@@ -261,124 +261,19 @@ whyPortUsed() {
 }
 
 ##
-# `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
-# the `.git` directory, listing directories first. The output gets piped into
-# `less` with options to preserve color and line numbers, unless the output is
-# small enough for one screen.
-# From https://github.com/mathiasbynens/dotfiles/blob/master/.functions
+# `tre` is a shorthand for `tree` with sensible defaults
 ##
 isInstalled tree && tre() {
-	tree -aC -I '.git|.next|node_modules|bower_components' --dirsfirst "$@" | less -FRX
+	local command="tree -a --gitignore -I '.git' $*"
+	local pager="${PAGER:-less -R}"
+
+	if [[ -t 1 ]]; then
+		# Only pipe to pager if output is going to a terminal
+		eval "$command" -C | $pager
+	fi
+
+	# Otherwise, just run the command
+	eval "$command"
 }
-
-##
-# Returns the port for the current project by looking for it in the package.json file
-# Defaults to 3000 if not found
-# Usage: portForProject
-##
-portForProject() {
-	# Get the project root directory from git
-	local -r projectRoot="$(git rev-parse --show-toplevel)"
-
-	# Try to get the port from the package.json file
-	grep -Eo '[-:=]\d{4}' \
-		"${projectRoot}/packages/service/package.json" |
-		# Get the first match
-		head -n 1 |
-		# Remove the leading characters
-		sed -E 's/[-:=]//g' || echo 3000
-}
-
-##
-# Returns the package manager for the current repo by looking for known files.
-# Defaults to `bun` if none found.
-# Usage: projectManagerForProject
-##
-projectManagerForProject() {
-	# Get the project root directory from git
-	local -r projectRoot="$(git rev-parse --show-toplevel)"
-	local packageManager=""
-
-	# Try to get the package manager from the `.tool-versions` file
-	packageManager="$(grep -Eo 'bun|pnpm|yarn|npm' \
-		"${projectRoot}/.tool-versions" |
-		# Get the first match
-		head -n 1)"
-
-	if [[ $packageManager != "" ]]; then
-		echo "$packageManager"
-		return
-	fi
-
-	# Try to get the package manager from the lock file
-	if [[ -f "${projectRoot}/bun.lockb" || -f "${projectRoot}/bun.lock" ]]; then
-		packageManager="bun"
-	elif [[ -f "${projectRoot}/pnpm-lock.yaml" ]]; then
-		packageManager="pnpm"
-	elif [[ -f "${projectRoot}/yarn.lock" ]]; then
-		packageManager="yarn"
-	elif [[ -f "${projectRoot}/package-lock.json" ]]; then
-		packageManager="npm"
-	fi
-
-	echo "${packageManager:-bun}"
-}
-
-##
-# Start the dev server along with some helpful extras
-# Usage: yeet [path]
-##
-yeet() (
-	local port=""
-	port="${PORT:-$(portForProject)}"
-
-	local packageManager=""
-	packageManager="$(projectManagerForProject)"
-
-	local path="${1:-/}"
-
-	# TODO: Add a flag to open in browser
-	local shouldOpenInBrowser=false
-
-	local currentBranch
-	currentBranch="$(git rev-parse --abbrev-ref HEAD 2> /dev/null || echo '')"
-
-	local hasRemoteBranch=false
-	if [[ $currentBranch != '' ]]; then
-		if git show-ref --verify --quiet "refs/remotes/origin/${currentBranch}"; then
-			hasRemoteBranch=true
-		fi
-	fi
-
-	# Only pull if there's a remote branch to pull from
-	if $hasRemoteBranch; then
-		git pull --prune --quiet
-	fi
-
-	# Ensure logged into the package manager if needed
-	local isLoggedIn=false
-	if $packageManager whoami &> /dev/null; then
-		isLoggedIn=true
-	fi
-
-	if ! $isLoggedIn; then
-		$packageManager login
-	fi
-
-	$packageManager install --silent
-
-	local devCommand="$packageManager run dev"
-
-	if $shouldOpenInBrowser; then
-		$devCommand &
-
-		waitForPort "$port"
-		open "http://localhost:${port}${path}"
-
-		fg
-	else
-		$devCommand
-	fi
-)
 
 notifyLoaded
