@@ -272,19 +272,6 @@ isInstalled tree && tre() {
 }
 
 ##
-# Blocks until a port has something listening on it
-# Usage: waitForPort <port>
-##
-waitForPort() {
-	local port="${1?Missing port}"
-
-	# Using `netstat` instead of `lsof` because it's faster
-	while ! netstat -van | grep -q "${port}.*LISTEN"; do
-		sleep 1
-	done
-}
-
-##
 # Returns the port for the current project by looking for it in the package.json file
 # Defaults to 3000 if not found
 # Usage: portForProject

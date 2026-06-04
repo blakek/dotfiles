@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+
+	cat <<-EOF
+		Blocks until a port has something listening on it.
+
+		$(tput bold)USAGE$(tput sgr0)
+		  ${script_name} [options] <port>
+
+		$(tput bold)OPTIONS$(tput sgr0)
+		  -h, --help    Show this help message and exit
+		  -t, --timeout <seconds>    Maximum time to wait for the port (default: wait indefinitely)
+	EOF
+}
+
+panic() {
+	echo "Error: $1" >&2
+	exit 1
+}
+
+is_number() {
+	[[ "$1" =~ ^[0-9]+$ ]]
+}
+
+usec() {
+	echo "${EPOCHREALTIME//.}"
+}
+
+assert_not_timed_out() {
+	local current_time
+	local timeout_time="$1"
+
+	if [[ "$timeout_time" == "" ]]; then
+		return # No timeout set, so we never time out
+	fi
+
+	current_time=$(usec)
+	if [[ "$current_time" -ge "$timeout_time" ]]; then
+		panic "Timed out waiting for port $port"
+	fi
+}
+
+##
+# Blocks until a port has something listening on it
+# Usage: waitForPort <port>
+##
+wait-for-port() {
+	local port
+	local sleep_time=0.5
+	local timeout=-1
+
+	while (( "$#" )); do
+		case "$1" in
+			-h|--help)
+				show_usage
+				exit 0
+				;;
+			-t|--timeout)
+				# make sure we have a timeout value and that it's a number
+				if ! is_number "$2"; then
+					panic "--timeout requires a numeric argument"
+				fi
+				timeout="$2"
+				shift
+				;;
+			*)
+				if is_number "$1"; then
+					if  [[ "$port" != "" ]]; then
+						panic "Multiple ports specified"
+					fi
+
+					port="$1"
+					break
+				fi
+
+				panic "Unknown option: $1"
+				;;
+		esac
+
+		shift
+	done
+
+	if [[ "$port" == "" ]]; then
+		panic "No port specified"
+	fi
+
+	local timeout_time
+	if [[ "$timeout" -gt 0 ]]; then
+		timeout_time=$(( $(usec) + timeout * 1000000 ))
+	fi
+
+	# Using `netstat` instead of `lsof` because it's faster
+	while ! netstat -van | grep -q "${port}.*LISTEN"; do
+		assert_not_timed_out "$timeout_time"
+		sleep "$sleep_time"
+	done
+}
+
+wait-for-port "$@"
