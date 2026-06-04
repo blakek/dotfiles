@@ -1,24 +1,6 @@
 #!/usr/bin/env bash
 
 ##
-# Returns the average ping time to a given host.
-# Usage: bk.net.averagePing <host> [count]
-##
-bk.net.averagePing() {
-	local -r host="${1:?Host is required}"
-	local -r count="${2:-5}"
-	local -r osType="$(bk.os.type)"
-
-	if [[ $osType == "macos" ]]; then
-		ping -c "$count" -i 0.5 "$host" | awk -F '/' '/round-trip/ {print $5}'
-	elif [[ $osType == "linux" ]]; then
-		ping -c "$count" -i 0.5 "$host" | awk -F '/' '/rtt/ {print $5}'
-	else
-		echo "Unknown OS type: $osType"
-	fi
-}
-
-##
 # Returns the HTTP status code for a given URL
 # Usage: bk.net.httpStatus <url>
 ##
