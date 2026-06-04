@@ -2,9 +2,7 @@
 abbr -a l 'ls -F'
 abbr -a la 'ls -A'
 abbr -a ll 'ls -lhAF'
-
 abbr -a grep 'grep --colour=auto'
-
 abbr -a poweroff 'shutdown -h now'
 
 # Fix common typos
@@ -13,6 +11,9 @@ abbr -a sl 'ls'
 
 # VS Code
 abbr -a c 'code'
+
+# macOS `open`
+abbr -a o 'open .'
 
 # git
 abbr -a g 'git'
