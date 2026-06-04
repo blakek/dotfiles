@@ -10,20 +10,6 @@ bk.net.httpStatus() {
 }
 
 ##
-# Returns the OS type as a lowercase string (e.g. "macos", "linux", "unknown")
-# Usage: bk.os.type
-##
-bk.os.type() {
-	local -r os="$(uname -s)"
-
-	case "$os" in
-		Darwin*) echo 'macos' ;;
-		Linux*) echo 'linux' ;;
-		*) echo "unknown" ;;
-	esac
-}
-
-##
 # Copies stdin to the clipboard using the first available clipboard utility (clipboard, pbcopy, xclip, wl-copy).
 # If no clipboard utility is found, it just prints stdin to stdout.
 # Usage: echo "text to copy" | copy [--no-print]
