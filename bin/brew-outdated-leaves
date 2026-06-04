@@ -11,4 +11,3 @@
 #:  Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
 
 comm -12 <(brew outdated | sort) <(brew leaves | sort)
-
