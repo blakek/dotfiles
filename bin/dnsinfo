@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+get_default_records() {
+	echo 'A' 'AAAA' 'CNAME' 'MX' 'SOA' 'TXT'
+}
+
+show_usage() {
+	local bold dim reset script_name default_records
+	bold=$(tput bold)
+	dim=$(tput dim)
+	reset=$(tput sgr0)
+	script_name=$(basename "$0")
+
+	default_records=$(get_default_records)
+	default_records="${default_records// /, }"
+
+	cat <<EOF
+Fetch DNS information for a given domain and record types (defaults to ${default_records}).
+
+${bold}USAGE${reset}
+  ${script_name} <domain> [recordType...]
+
+${bold}EXAMPLES${reset}
+  ${script_name} example.com ${dim}# Fetches ${default_records} records for example.com${reset}
+  ${script_name} example.com A MX TXT ${dim}# Fetches A, MX, and TXT records for example.com${reset}
+EOF
+}
+
+##
+# Returns DNS information for a given domain and record types (defaults to A, AAAA, CNAME, MX, SOA, TXT)
+# Usage: dnsinfo <domain> [recordType...]
+##
+dnsinfo() {
+	local domain="$1"
+	shift
+
+	case "$domain" in
+		-h|--help|"")
+			show_usage
+			return
+			;;
+	esac
+
+	# Using strings
+	local defaultRecords recordsRequests
+	defaultRecords=$(get_default_records)
+	recordsRequests="${*:-$defaultRecords}"
+
+	# construct dig arguments as a string to avoid issues with empty arrays and word splitting
+	local -a digArgs=(+noall +answer +multiline)
+	for record in $recordsRequests; do
+		digArgs+=("${domain}" "${record}")
+	done
+
+	dig "${digArgs[@]}"
+}
+
+dnsinfo "$@"

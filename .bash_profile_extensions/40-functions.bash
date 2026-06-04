@@ -112,24 +112,6 @@ dataurl() {
 }
 
 ##
-# Returns DNS information for a given domain and record types (defaults to A, AAAA, CNAME, MX, SOA, TXT)
-# Usage: dnsinfo <domain> [recordType...]
-##
-dnsinfo() {
-	local domain="$1"
-	shift
-
-	local -a defaultRecords=('A' 'AAAA' 'CNAME' 'MX' 'SOA' 'TXT')
-	local -a recordsRequests=()
-
-	for record in "${@:-"${defaultRecords[@]}"}"; do
-		recordsRequests+=("${domain}" "${record}")
-	done
-
-	dig +noall +answer +multiline "${recordsRequests[@]}"
-}
-
-##
 # Downloads audio from a given URL using yt-dlp
 # Usage: downloadAudio <url>
 ##
