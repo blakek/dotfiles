@@ -157,21 +157,6 @@ isInstalled html2md glow && mdbrowser() {
 }
 
 ##
-# Prints and copies external IP address
-# Usage: myip
-##
-myip() {
-	ip="$(curl --silent api.ipify.org)"
-
-	if [[ $ip == '' ]]; then
-		echo "Couldn't fetch IP address"
-		return
-	fi
-
-	echo "$ip" | copy
-}
-
-##
 # `o` with no arguments opens the current directory, otherwise opens the given
 # location
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.functions

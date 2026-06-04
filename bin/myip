@@ -1,0 +1,37 @@
+#!/bin/sh
+
+show_usage() {
+	italic=$(tput sitm)
+	reset=$(tput sgr0)
+	script_name=$(basename "$0")
+
+	echo "${italic}${script_name}${reset} - Fetches your public IP address and copies it to the clipboard (if the ${italic}copy${reset} command is available)."
+}
+
+is_installed() {
+	command -v "$1" >/dev/null 2>&1
+}
+
+myip() {
+	case "$1" in
+		-h|--help)
+			show_usage
+			return
+			;;
+	esac
+
+	ip="$(curl --silent api.ipify.org)"
+
+	if [ "$ip" = "" ]; then
+		echo "Couldn't fetch IP address"
+		return 1
+	fi
+
+	if is_installed copy; then
+		echo "$ip" | copy
+	else
+		echo "$ip"
+	fi
+}
+
+myip "$@"
