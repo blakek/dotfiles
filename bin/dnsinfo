@@ -14,16 +14,16 @@ show_usage() {
 	default_records=$(get_default_records)
 	default_records="${default_records// /, }"
 
-	cat <<EOF
-Fetch DNS information for a given domain and record types (defaults to ${default_records}).
+	cat <<-EOF
+		Fetch DNS information for a given domain and record types (defaults to ${default_records}).
 
-${bold}USAGE${reset}
-  ${script_name} <domain> [recordType...]
+		${bold}USAGE${reset}
+		${script_name} <domain> [recordType...]
 
-${bold}EXAMPLES${reset}
-  ${script_name} example.com ${dim}# Fetches ${default_records} records for example.com${reset}
-  ${script_name} example.com A MX TXT ${dim}# Fetches A, MX, and TXT records for example.com${reset}
-EOF
+		${bold}EXAMPLES${reset}
+		${script_name} example.com ${dim}# Fetches ${default_records} records for example.com${reset}
+		${script_name} example.com A MX TXT ${dim}# Fetches A, MX, and TXT records for example.com${reset}
+	EOF
 }
 
 ##
