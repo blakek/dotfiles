@@ -11,9 +11,9 @@ style() {
 ##
 # Returns the package manager for the current repo by looking for known files.
 # Defaults to `bun` if none found.
-# Usage: projectManagerForProject
+# Usage: packageManagerForProject
 ##
-projectManagerForProject() {
+packageManagerForProject() {
 	# Get the project root directory from git
 	local -r projectRoot="$(git rev-parse --show-toplevel)"
 	local packageManager=""
@@ -44,7 +44,7 @@ projectManagerForProject() {
 }
 
 pm() {
-	local -r packageManager="$(projectManagerForProject)"
+	local -r packageManager="$(packageManagerForProject)"
 
 	style "%{dim}Using \`${packageManager}\`\n%{reset}"
 
