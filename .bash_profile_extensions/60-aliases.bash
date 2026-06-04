@@ -67,6 +67,5 @@ alias brave-browser='/Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Brow
 alias chrome-browser='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias imageoptim='/Applications/ImageOptim.app/Contents/MacOS/ImageOptim'
-alias obsidian="/Applications/Obsidian.app/Contents/MacOS/Obsidian"
 
 notifyLoaded
