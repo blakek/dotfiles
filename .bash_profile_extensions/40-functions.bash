@@ -137,21 +137,11 @@ editpipe() (
   cat -- "$tmp"
 )
 
-
-##
-# Add defaults to the default GitHub Desktop CLI
-##
-github() {
-	local -r originalScript="$(type -fp github)"
-	[[ $originalScript == '' ]] && echo '`github` is not installed' && return
-	([[ $# -eq 0 ]] && "${originalScript}" .) || "${originalScript}" "$@"
-}
-
 ##
 # Converts HTML to Markdown
 # Usage: html2md < input.html > output.md
 ##
-html2md() {
+isInstalled pandoc && html2md() {
 	pandoc -f html -t gfm-raw_html -
 }
 
@@ -159,11 +149,11 @@ html2md() {
 # Curl + pandoc browser
 # Usage: mdbrowser <url>
 ##
-mdbrowser() {
+isInstalled html2md glow && mdbrowser() {
 	local -r url="$1"
 	shift
 
-	curl -Ls "$url" | html2md | npx mdless
+	curl -Ls "$url" | html2md | glow -p
 }
 
 ##
