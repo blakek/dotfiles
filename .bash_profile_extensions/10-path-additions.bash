@@ -19,8 +19,6 @@ register_path_additions() {
 		"${HOME}/.deno/bin"
 		# Directory-specific node_modules
 		"node_modules/.bin"
-		# Pipx
-		"${HOME}/.local/bin"
 	)
 
 	# Combine all paths into a single string
