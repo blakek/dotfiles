@@ -78,14 +78,6 @@ arrayJoin() {
 }
 
 ##
-# Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
-# Usage: brew-leaves-outdated
-##
-brew-leaves-outdated() {
-	comm -12 <(brew outdated | sort) <(brew leaves | sort)
-}
-
-##
 # Simple countdown timer
 # Usage: countdown <durationInSeconds>
 ##
