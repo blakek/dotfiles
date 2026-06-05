@@ -12,7 +12,7 @@ set -gx DEV_ROOT "$HOME/dev"
 
 # Pager
 if test -x "$dotfiles_root/bin/bkpager"
-	set -gx PAGER "$dotfiles_root/bin/bkpager"
+    set -gx PAGER "$dotfiles_root/bin/bkpager"
 end
 
 # Load ~/.env
