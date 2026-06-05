@@ -3,9 +3,8 @@ set -gx EDITOR vim
 set -gx VISUAL "code --wait"
 set -gx CLICOLOR 1
 
-set -l current_file (path resolve (status -f))
-set -l current_dir (path dirname "$current_file")
-set -l dotfiles_root (path normalize -- "$current_dir/../../..")
+set -l here (path resolve (status dirname))
+set -l dotfiles_root (path normalize -- "$here/../../..")
 
 # For this dotfiles repo…
 set -gx DOTFILES_ROOT "$dotfiles_root"
