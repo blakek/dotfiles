@@ -1,3 +1,9 @@
+function setup-misen-place
+    if is-installed mise
+        mise activate fish | source
+    end
+end
+
 if status is-interactive
-    mise activate fish | source
+    setup-misen-place
 end
