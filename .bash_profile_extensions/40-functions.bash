@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 
 ##
-# Returns the HTTP status code for a given URL
-# Usage: bk.net.httpStatus <url>
-##
-bk.net.httpStatus() {
-	local -r url="${1:?URL is required}"
-	curl -s -o /dev/null -w "%{http_code}" "$url"
-}
-
-##
 # Copies stdin to the clipboard using the first available clipboard utility (clipboard, pbcopy, xclip, wl-copy).
 # If no clipboard utility is found, it just prints stdin to stdout.
 # Usage: echo "text to copy" | copy [--no-print]
