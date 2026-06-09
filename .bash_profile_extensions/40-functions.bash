@@ -115,15 +115,6 @@ isInstalled gum && p() {
 }
 
 ##
-# Print ¯\_(ツ)_/¯ and copy to clipboard
-# Usage: shrug
-##
-shrug() {
-	echo '¯\_(ツ)_/¯' | copy
-}
-
-
-##
 # `tre` is a shorthand for `tree` with sensible defaults
 ##
 isInstalled tree && tre() {
