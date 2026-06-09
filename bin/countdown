@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+
+	cat <<-EOF
+		Print a simple countdown timer.
+
+		USAGE
+		  ${script_name} <seconds>
+	EOF
+}
+
+panic() {
+	printf 'Error: %s\n' "$1" >&2
+	exit 1
+}
+
+usec() {
+	echo "${EPOCHREALTIME//.}"
+}
+
+parse_duration_usec() {
+	local duration="$1"
+
+	if ! [[ "$duration" =~ ^([0-9]+(\.[0-9]+)?|\.[0-9]+)$ ]]; then
+		panic "Duration must be a positive number of seconds"
+	fi
+
+	awk "BEGIN { print int(($duration * 1000000) + 0.5) }"
+}
+
+remaining_time_s() {
+	local remaining_usec="$1"
+	printf '%s.%03ds' "$((remaining_usec / 1000000))" "$(((remaining_usec % 1000000) / 1000))"
+}
+
+countdown() {
+	local duration="${1:-}"
+
+	case "$duration" in
+		-h|--help|help|"")
+			show_usage
+			return
+			;;
+	esac
+
+	local duration_usec
+	duration_usec="$(parse_duration_usec "$duration")"
+
+	if (( duration_usec <= 0 )); then
+		panic "Duration must be greater than 0"
+	fi
+
+	local start_time end_time now remaining_usec sleep_usec
+	start_time="$(usec)"
+	end_time=$((start_time + duration_usec))
+
+	while :; do
+		now="$(usec)"
+		remaining_usec=$((end_time - now))
+
+		if (( remaining_usec <= 0 )); then
+			break
+		fi
+
+		printf '\r%s remaining\033[K' "$(remaining_time_s "$remaining_usec")"
+
+		sleep_usec=100000
+		if (( remaining_usec < sleep_usec )); then
+			sleep_usec="$remaining_usec"
+		fi
+
+		sleep "$(awk "BEGIN { print $sleep_usec / 1000000 }")"
+	done
+
+	printf '\r\033[K'
+}
+
+countdown "$@"

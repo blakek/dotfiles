@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+
+	cat <<-EOF
+		Trash every node_modules directory in the current git repository.
+
+		USAGE
+		  ${script_name}
+	EOF
+}
+
+panic() {
+	printf 'Error: %s\n' "$1" >&2
+	exit 1
+}
+
+is_installed() {
+	command -v "$1" >/dev/null 2>&1
+}
+
+trash_node_modules() {
+	case "${1:-}" in
+		-h|--help|help)
+			show_usage
+			return
+			;;
+	esac
+
+	local repo_root
+	repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || panic "Not inside a git repository"
+
+	local -a directories_to_remove=()
+	while IFS= read -r directory; do
+		directories_to_remove+=("$directory")
+	done < <(find "$repo_root" -type d -name node_modules -prune -print)
+
+	if (( ${#directories_to_remove[@]} == 0 )); then
+		printf 'No node_modules found in the repository\n'
+		return
+	fi
+
+	printf 'Found %s node_modules directories to remove:\n' "${#directories_to_remove[@]}"
+	printf '  - %s\n' "${directories_to_remove[@]}"
+
+	read -r -p 'Are you sure you want to remove these directories? [Y/n] ' reply
+	if [[ -n "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
+		printf 'Aborting.\n'
+		return
+	fi
+
+	if is_installed trash; then
+		trash "${directories_to_remove[@]}"
+		return
+	fi
+
+	rm -rf "${directories_to_remove[@]}"
+}
+
+trash_node_modules "$@"

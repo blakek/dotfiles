@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+
+	cat <<-EOF
+		Download audio from a URL using yt-dlp.
+
+		USAGE
+		  ${script_name} <url> [yt-dlp options...]
+	EOF
+}
+
+download_audio() {
+	case "${1:-}" in
+		-h|--help|help|"")
+			show_usage
+			return
+			;;
+	esac
+
+	yt-dlp --extract-audio --audio-format m4a "$@"
+}
+
+download_audio "$@"

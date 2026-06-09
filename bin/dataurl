@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+
+	cat <<-EOF
+		Create a data URL from a file.
+
+		USAGE
+		  ${script_name} <file-path>
+	EOF
+}
+
+panic() {
+	printf 'Error: %s\n' "$1" >&2
+	exit 1
+}
+
+dataurl() {
+	local file_path="${1:-}"
+
+	case "$file_path" in
+		-h|--help|help|"")
+			show_usage
+			return
+			;;
+	esac
+
+	if [[ ! -f "$file_path" ]]; then
+		panic "File not found: $file_path"
+	fi
+
+	local mime_type
+	mime_type=$(file -b --mime-type "$file_path")
+
+	if [[ $mime_type == text/* ]]; then
+		mime_type="${mime_type};charset=utf-8"
+	fi
+
+	printf 'data:%s;base64,%s\n' "$mime_type" "$(openssl base64 -in "$file_path" | tr -d '\n')"
+}
+
+dataurl "$@"

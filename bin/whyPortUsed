@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+
+	cat <<-EOF
+		Show which process is listening on a port, with an option to kill it.
+
+		USAGE
+		  ${script_name} <port>
+	EOF
+}
+
+panic() {
+	printf 'Error: %s\n' "$1" >&2
+	exit 1
+}
+
+is_number() {
+	[[ "$1" =~ ^[0-9]+$ ]]
+}
+
+why_port_used() {
+	local port="${1:-}"
+
+	case "$port" in
+		-h|--help|help|"")
+			show_usage
+			return
+			;;
+	esac
+
+	if ! is_number "$port"; then
+		panic "Port must be numeric"
+	fi
+
+	local process_id
+	process_id="$(
+		netstat -van |
+			grep -E "[\\.:]${port}[[:space:]].*LISTEN" |
+			awk 'NR == 1 { print $9 }'
+	)"
+
+	if [[ -z "$process_id" ]]; then
+		printf "Port %s doesn't seem to be used\n" "$port"
+		return
+	fi
+
+	local process_name_and_args
+	process_name_and_args=$(ps -p "$process_id" -o comm=,args=)
+	printf '%s: %s\n' "$process_id" "$process_name_and_args"
+
+	read -r -p 'Kill process? [y/N] ' reply
+	if [[ "$reply" =~ ^[Yy]$ ]]; then
+		kill "$process_id"
+	fi
+}
+
+why_port_used "$@"
