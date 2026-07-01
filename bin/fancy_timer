@@ -8,7 +8,7 @@
 # - Shows a reverse progress bar for a larger indicator of time remaining
 ##
 
-fancy_timer_version="1.0.0-alpha.2"
+fancy_timer_version="2.0.0"
 
 bold() {
 	echo -e "\033[1m$*\033[0m"
@@ -19,31 +19,32 @@ show_usage() {
 		$(bold fancy_timer) - A fancy timer for the command line
 
 		$(bold USAGE EXAMPLES)
-		    # Set a 20 mintue timer
-		    fancy_timer 20m
+			# Set a 20 minute timer
+			fancy_timer 20m
 
-		    # Set a 1 hour timer with a custom message and no progress bar
-		    fancy_timer --no-progress -m "Time remaining: %r" 1h
+			# Set a 1 hour timer with a custom message and no progress bar
+			fancy_timer --no-progress -m "Time remaining: %r" 1h
 
 		$(bold OPTIONS)
-		    -h, --help     output usage information and exit
-		    -v, --version  output the version number and exit
-		    -c, --color    what color to use for the progress bar (default: #FFA500; accepts hex colors)
-		    -m, --message  a template message to display; see below for syntax
+			-h, --help     output usage information and exit
+			-v, --version  output the version number and exit
+			-c, --color    what color to use for the progress bar (default: #FFA500; accepts hex colors)
+			-m, --message  a template message to display; see below for syntax
+			-s, --sleep    how long to sleep between updates (default: 100ms; accepts time strings like 1s, 500ms, etc.)
 
-		    --no-color     disable color output
-		    --no-progress  disable the progress bar
+			--no-color     disable color output
+			--no-progress  disable the progress bar
 
 		$(bold ARGUMENTS)
-		    time      time to count down from (e.g. 1h23m45s)
+			time      time to count down from (e.g. 1h23m45s)
 
 		$(bold MESSAGE SYNTAX)
-		    The message is a string where the following are replaced:
-		        %r  time remaining
-		        %e  time elapsed
-		        %t  total time
+			The message is a string where the following are replaced:
+				%r  time remaining
+				%e  time elapsed
+				%t  total time
 
-		    Note, all time values are in the format 1h23m45s.
+			Note, all time values are in the format 1h23m45s.
 	END
 }
 
@@ -62,42 +63,68 @@ init() {
 	source "$bk_lib_location" || panic "Failed to source bk library"
 }
 
-##
-# Parse a time string (e.g. 1h30m20s) into seconds
-##
-parse_time() {
-	local time_string="$1"
-	local total_seconds=0
-	local hours=0
-	local minutes=0
-	local seconds=0
-
-	# Extract hours
-	if [[ $time_string =~ ([0-9]+)h ]]; then
-		hours=${BASH_REMATCH[1]}
-	fi
-
-	# Extract minutes
-	if [[ $time_string =~ ([0-9]+)m ]]; then
-		minutes=${BASH_REMATCH[1]}
-	fi
-
-	# Extract seconds
-	if [[ $time_string =~ ([0-9]+)s ]]; then
-		seconds=${BASH_REMATCH[1]}
-	fi
-
-	# Convert all to seconds
-	total_seconds=$((hours * 3600 + minutes * 60 + seconds))
-
-	echo $total_seconds
+# Returns the current time in microseconds
+usec() {
+	echo "${EPOCHREALTIME//.}"
 }
 
-##
+# Sleeps for a given number of microseconds
+usleep() {
+	local duration="$1"
+	if [[ -z "$duration" || "$duration" -le 0 ]]; then
+		return
+	fi
+
+	# Convert microseconds to seconds for the sleep command
+	local seconds=$(awk "BEGIN {printf \"%.6f\", $duration / 1000000}")
+	sleep "$seconds"
+}
+
+# Parse a time string (e.g. 1h30m20s) into microseconds
+parse_time() {
+	local input="${1//[[:space:]]/}"
+	local total=0
+	local value unit rest factor
+
+	[[ -n "$input" ]] || {
+		echo "parse_time: empty duration" >&2
+		return 2
+	}
+
+	while [[ -n "$input" ]]; do
+		if [[ "$input" =~ ^([0-9]+)(us|μs|ms|d|h|m|s)(.*)$ ]]; then
+			value="${BASH_REMATCH[1]}"
+			unit="${BASH_REMATCH[2]}"
+			rest="${BASH_REMATCH[3]}"
+
+			case "$unit" in
+				us|µs) factor=1 ;;
+				ms) factor=1000 ;;
+				s) factor=1000000 ;;
+				m) factor=60000000 ;;
+				h) factor=3600000000 ;;
+				d) factor=86400000000 ;;
+				*)
+				echo "parse_time: unsupported unit '$unit'" >&2
+				return 1
+				;;
+			esac
+
+			total=$((total + value * factor))
+			input="$rest"
+		else
+			echo "parse_time: invalid duration near '$input'" >&2
+			return 1
+		fi
+	done
+
+	printf '%s\n' "$total"
+}
+
 # Format a time in seconds into a human-readable string
-##
 format_time() {
-	local time="$1"
+	local raw_time="$1"
+	local time=$((raw_time / 1000000))  # Convert microseconds to seconds
 	local hours=$((time / 3600))
 	local minutes=$((time % 3600 / 60))
 	local seconds=$((time % 60))
@@ -121,6 +148,7 @@ fancy_timer() {
 	local message="%r remaining"
 	local progress=true
 	local color="$(bk.term.decorate '%{fg:#FFA500}')"
+	local sleep_duration=100000  # Default sleep duration in microseconds (100ms)
 
 	local ansi_invert="\033[7m"
 	local ansi_end_invert="\033[27m"
@@ -154,6 +182,16 @@ fancy_timer() {
 				progress=false
 				shift
 				;;
+			-s | --sleep)
+				sleep_duration=$(parse_time "$2")
+				if [[ $sleep_duration -le 0 ]]; then
+					panic "Invalid sleep duration: $2"
+				fi
+
+				echo "Sleep duration set to $(format_time "$sleep_duration")"
+
+				shift 2
+				;;
 			*)
 				time=$(parse_time "$1")
 				shift
@@ -168,18 +206,18 @@ fancy_timer() {
 	fi
 
 	# Start the timer
-	local start_time=$(date +%s)
+	local start_time=$(usec)
 	local end_time=$((start_time + time))
 
 	# Main loop
-	while [[ $(date +%s) -lt $end_time ]]; do
-		local current_time=$(date +%s)
+	while [[ $(usec) -lt $end_time ]]; do
+		local current_time=$(usec)
 		local elapsed_time=$((current_time - start_time))
 		local remaining_time=$((end_time - current_time))
 
 		# Calculate the message
-		local message_string=${message//\%r/$(format_time $remaining_time)}
-		message_string=${message_string//\%e/$(format_time $elapsed_time)}
+		local message_string=${message//\%r/$(format_time $((remaining_time)))}
+		message_string=${message_string//\%e/$(format_time $((elapsed_time)))}
 		message_string=${message_string//\%t/$(format_time "$time")}
 
 		if $progress; then
@@ -201,13 +239,13 @@ fancy_timer() {
 				$remaining_columns $remaining_columns "${message_string:progress_columns}" \
 				"$ansi_reset" \
 				"$ansi_clear_line"
-
 		else
 			printf "\r%s" "$message_string"
 		fi
 
-		# Sleep for a second
-		sleep 1
+		# use the lesser of the sleep duration and the remaining time to avoid overshooting
+		local actual_sleep_duration=$((remaining_time < sleep_duration ? remaining_time : sleep_duration))
+		usleep "$actual_sleep_duration"
 	done
 
 	# Print the elapsed time
