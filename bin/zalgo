@@ -1,0 +1,107 @@
+#!/usr/bin/env bun
+
+import "bun";
+import { randomInt } from "node:crypto";
+
+type Direction = "up" | "down" | "middle";
+
+const zalgoCharacters = {
+	down: "̖̗̘̙̜̝̞̟̠̤̥̦̩̪̫̬̭̮̯̰̱̲̳̹̺̻̼͇͈͉͍͎͓͔͕͖͙͚̣ͅ",
+	middle: "̴̵̶̸̷̡̢̧̨̛̀́̕͘͜͟͢͝͞͠͡ ҉",
+	up: "̍̎̄̅̿̑̆̐͒͗͑̇̈̊͂̓̈͊͋͌̃̂̌͐̀́̋̏̒̓̔̽̉ͣͤͥͦͧͨͩͪͫͬͭͮͯ̾͛͆̚",
+} as const satisfies Record<Direction, string>;
+
+function getCharacter(direction: Direction): string {
+	const characters = zalgoCharacters[direction];
+	const index = randomInt(0, characters.length);
+	return characters[index];
+}
+
+function characterCountForIntensity(
+	intensity: number,
+): Record<Direction, number> {
+	// Reduce the intensity for middle characters so the text is… somewhat readable
+	const middleIntensity = Math.round(Math.log(intensity + 1) * 2);
+
+	const lowerBound = Math.round(intensity / 2);
+
+	return {
+		down: randomInt(lowerBound, intensity + 1),
+		middle: randomInt(0, middleIntensity + 1),
+		up: randomInt(lowerBound, intensity + 1),
+	};
+}
+
+function shouldAddZalgoCharacter(character: string): boolean {
+	const codePoint = character.codePointAt(0);
+	if (codePoint === undefined) {
+		return false;
+	}
+
+	// Check if the character is a letter or a number
+	return (
+		(codePoint >= 48 && codePoint <= 57) || // 0-9
+		(codePoint >= 65 && codePoint <= 90) || // A-Z
+		(codePoint >= 97 && codePoint <= 122) // a-z
+	);
+}
+
+function showUsage(): void {
+	const bold = "\x1b[1m";
+	const reset = "\x1b[0m";
+
+	const usage = [
+		`${bold}USAGE${reset}`,
+		`  zalgo [text] [intensity]`,
+		``,
+		`${bold}ARGUMENTS${reset}`,
+		`  text       The text to transform into Zalgo text. Defaults to "   he is here   ".`,
+		`  intensity  The intensity of the Zalgo effect. Defaults to 16.`,
+	].join("\n");
+
+	console.log(usage);
+}
+
+/**
+ * Generates Zalgo text from the given input string.
+ * @param text The input string to transform into Zalgo text.
+ * @param intensity The intensity of the Zalgo effect.
+ * @returns The transformed Zalgo text.
+ */
+export function zalgo(text = "   he is here   ", intensity = 16): string {
+	const counts = characterCountForIntensity(intensity);
+	let result = "";
+
+	for (const char of text) {
+		result += char;
+
+		if (!shouldAddZalgoCharacter(char)) {
+			continue;
+		}
+
+		for (const direction of ["up", "middle", "down"] as Direction[]) {
+			for (let i = 0; i < counts[direction]; i++) {
+				result += getCharacter(direction);
+			}
+		}
+	}
+
+	return result;
+}
+
+if (import.meta.main) {
+	if (
+		process.argv.includes("--help") ||
+		process.argv.includes("-h") ||
+		process.argv.includes("help")
+	) {
+		showUsage();
+		process.exit(0);
+	}
+
+	const args = process.argv.slice(2);
+	const text = args[0] ?? "   he is here   ";
+	const intensity = parseInt(args[1] ?? "16", 10);
+
+	console.log(zalgo(text, intensity));
+}
