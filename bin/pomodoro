@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+show_usage() {
+	local script_name
+	script_name=$(basename "$0")
+	
+	cat <<-EOF
+		$(bold USAGE)
+		  ${script_name} [task] [time]
+
+		$(bold ARGUMENTS)
+		  task  - The name of the task (default: "Pomodoro")
+		  time  - The duration of the timer (default: 15m; accepts hours, minutes, seconds in the format 1h23m45s)
+	EOF
+}
+
+bold() {
+	echo -e "\033[1m$*\033[0m"
+}
+
+italic() {
+	echo -e "\033[3m$*\033[0m"
+}
+
+notify() {
+	local message=$1
+	local title="Pomodoro"
+	
+	osascript -e "display notification \"$message\" with title \"$title\" sound name \"Glass\""
+}
+
+pomodoro() {
+	case "${1-}" in
+		-h|--help|help)
+			show_usage
+			exit 0
+			;;
+	esac
+	
+	local task="${1:-Pomodoro}"
+	local time="${2:-15m}"
+
+	bold "$task"
+	fancy_timer "$time"
+	notify "Time's up! Take a break!"
+}
+
+pomodoro "$@"
