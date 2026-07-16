@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bold() {
+	echo -e "\033[1m$*\033[0m"
+}
+
+show_usage() {
+	cat <<-END
+		$(bold epub-pack) - A tool to pack an EPUB directory into a single EPUB file
+
+		$(bold USAGE EXAMPLES)
+			# Pack an EPUB file
+			epub-pack input_directory output.epub
+
+		$(bold OPTIONS)
+			-h, --help     output usage information and exit
+			-o, --output   specify the output EPUB file name (default: <input_directory>-packed.epub)
+
+		$(bold ARGUMENTS)
+			input      the input EPUB directory
+	END
+}
+
+panic() {
+	red="\033[31m"
+	reset="\033[0m"
+	echo -e "${red}Error: $*${reset}" >&2
+	exit 1
+}
+
+epub_pack() {
+	local input_dir=""
+	local output_file=""
+
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-h|--help)
+				show_usage
+				exit 0
+				;;
+			-o|--output)
+				output_file="$2"
+				shift 2
+				;;
+			-*)
+				panic "Unknown option: $1"
+				;;
+			*)
+				input_dir="$1"
+				shift
+				;;
+		esac
+	done
+
+	if [[ -z "$input_dir" ]]; then
+		panic "Input directory is required"
+	fi
+
+	if [[ ! -d "$input_dir" ]]; then
+		panic "Input directory '$input_dir' does not exist"
+	fi
+
+	if [[ -z "$output_file" ]]; then
+		resolved_input_dir="$(realpath "$input_dir")"
+		output_file="${resolved_input_dir%.epub}-packed.epub"
+	fi
+
+	# Create the EPUB file using zip
+	cd "$input_dir" || panic "Failed to change directory to '$input_dir'"
+
+	zip -X0 "$output_file" mimetype || panic "Failed to add mimetype file"
+	zip -Xr9D "$output_file" * -x mimetype || panic "Failed to add EPUB contents"
+
+	echo "EPUB packed successfully into '$output_file'"
+}
+
+epub_pack "$@"
