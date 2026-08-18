@@ -26,7 +26,6 @@ abbr -a gs 'git status --short --branch'
 
 # Podman/Docker compatibility
 if ! is-installed docker && is-installed podman
-    then
     abbr -a docker podman
 end
 

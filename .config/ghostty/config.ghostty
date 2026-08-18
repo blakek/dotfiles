@@ -1,0 +1,7 @@
+adjust-cursor-thickness = 2
+background-blur = true
+background-opacity = 0.9420646067
+cursor-style-blink = true
+# font-family = "JetBrainsMonoNF-Regular"
+theme = Fishish
+window-padding-x = 10

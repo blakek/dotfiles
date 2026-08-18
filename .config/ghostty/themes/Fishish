@@ -1,0 +1,26 @@
+# Fishish
+
+palette = 0=#676767
+palette = 1=#f14c4c
+palette = 2=#15ac91
+palette = 3=#e5b95c
+palette = 4=#4c9df3
+palette = 5=#e567dc
+palette = 6=#75d3ba
+palette = 7=#d6d6dd
+palette = 8=#676767
+palette = 9=#f14c4c
+palette = 10=#15ac91
+palette = 11=#e5b95c
+palette = 12=#4c9df3
+palette = 13=#e567dc
+palette = 14=#75d3ba
+palette = 15=#d6d6dd
+
+background = #181818
+foreground = #d6d6dd
+cursor-color = #ff67dc
+cursor-text = #181818
+selection-background = #163761
+selection-foreground = #d6d6dd
+bold-color = #ffffff
