@@ -4,14 +4,13 @@ log_info() {
 	echo -e "\e[2m$*\e[0m"
 }
 
-##
-# Returns the package manager for the current repo by looking for known files.
-# Defaults to `bun` if none found.
-# Usage: packageManagerForProject
-##
-packageManagerForProject() {
+get_project_root() {
+	git rev-parse --show-toplevel 2>/dev/null || echo ""
+}
+
+find_package_manager() {
 	# Get the project root directory from git
-	local -r projectRoot="$(git rev-parse --show-toplevel)"
+	local -r projectRoot="$(get_project_root)"
 	local packageManager=""
 
 	# Try to get the package manager from the `.tool-versions` file
@@ -39,8 +38,13 @@ packageManagerForProject() {
 	echo "${packageManager:-bun}"
 }
 
+##
+# Returns the package manager for the current repo by looking for known files.
+# Defaults to `bun` if none found.
+# Usage: pm [args...]
+##
 pm() {
-	local -r packageManager="$(packageManagerForProject)"
+	local -r packageManager="$(find_package_manager)"
 
 	log_info "Using \`${packageManager}\`"
 
