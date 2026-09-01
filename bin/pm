@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-style() {
-	if ! type -t bk.term.decorate &>/dev/null; then
-		source "${DOTFILES_ROOT}/lib/bk.sh"
-	fi
-
-	bk.term.decorate "$@"
+log_info() {
+	echo -e "\e[2m$*\e[0m"
 }
 
 ##
@@ -46,7 +42,7 @@ packageManagerForProject() {
 pm() {
 	local -r packageManager="$(packageManagerForProject)"
 
-	style "%{dim}Using \`${packageManager}\`\n%{reset}"
+	log_info "Using \`${packageManager}\`"
 
 	# If command is the `i` command, hijack it and run whoami || login.
 	if [[ "$1" == "i" ]]; then
