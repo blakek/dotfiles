@@ -42,6 +42,41 @@ is_installed() {
 	command -v "$1" &>/dev/null
 }
 
+get_package_manager_from_package_json() {
+	local packageManager
+
+	if ! [[ -f "$PROJECT_ROOT/package.json" ]]; then
+		log_debug "No package.json file found in project root"
+		return 1
+	fi
+
+	if ! is_installed "jq"; then
+		log_debug "jq is not installed, skipping package.json parsing"
+		return 1
+	fi
+
+	packageManager="$(jq -r '.packageManager // empty' "$PROJECT_ROOT/package.json")"
+
+	if [[ -z "$packageManager" ]]; then
+		log_debug "No packageManager field found in package.json"
+		return 1
+	fi
+
+	# It should match the format "name@version", so we can extract the name and make sure it's a known package manager
+	packageManager="${packageManager%%@*}"
+
+	case "$packageManager" in
+		bun | pnpm | yarn | npm)
+			log_debug "Found package manager in package.json: $packageManager"
+			echo "$packageManager"
+			;;
+		*)
+			log_debug "Unknown package manager in package.json: $packageManager"
+			return 1
+			;;
+	esac
+}
+
 get_package_manager_from_tool_versions() {
 	local -r toolVersionsFile="$PROJECT_ROOT/.tool-versions"
 	local packageManager
@@ -99,7 +134,8 @@ get_package_manager_from_global_install() {
 }
 
 find_package_manager() {
-	get_package_manager_from_tool_versions ||
+	get_package_manager_from_package_json ||
+		get_package_manager_from_tool_versions ||
 		get_package_manager_from_lock_file ||
 		get_package_manager_from_global_install
 }
