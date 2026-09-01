@@ -1,11 +1,129 @@
 #!/usr/bin/env bash
 
+##
+# Wrapper script to find the package manager for the current repo and run it with the given arguments.
+#
+# Searches common locations:
+# 1. `.tool-versions` file in the project root
+# 2. Lock files in the project root (e.g. bun.lock, pnpm-lock.yaml, etc.)
+# 3. Global install of bun, pnpm, yarn, or npm
+#
+# The only change in behavior is that if the command is `i`, it will ensure the user is logged in first.
+#
+# Set `DEBUG` to a non-empty value to enable debug logging (e.g. `DEBUG=1 pm --help`).
+##
+
+italic() {
+	printf "\e[3m%s\e[0m" "$*"
+}
+
 log_info() {
-	echo -e "\e[2m$*\e[0m"
+	echo -e "\e[2m$*\e[0m" >/dev/stderr
+}
+
+log_debug() {
+	if [[ "${DEBUG-}" ]]; then
+		echo -e "\e[2m$*\e[0m" >/dev/stderr
+	fi
+}
+
+log_error() {
+	echo -e "\e[31m$*\e[0m" >/dev/stderr
+}
+
+panic() {
+	log_error "$*"
+	exit 1
 }
 
 get_project_root() {
-	git rev-parse --show-toplevel 2>/dev/null || echo ""
+	git rev-parse --show-toplevel 2>/dev/null || pwd
+}
+
+get_tool_versions_file() {
+	local -r projectRoot="$(get_project_root)"
+	if [[ -f "${projectRoot}/.tool-versions" ]]; then
+		echo "${projectRoot}/.tool-versions"
+	else
+		echo ""
+	fi
+}
+
+is_installed() {
+	command -v "$1" &>/dev/null
+}
+
+get_package_manager_from_tool_versions() {
+	local -r toolVersionsFile="$(get_tool_versions_file)"
+	local packageManager=""
+
+	if ! [[ -f "$toolVersionsFile" ]]; then
+		log_debug "No .tool-versions file found in project root"
+		echo ""
+		return
+	fi
+
+	packageManager="$(grep -Eo "bun|pnpm|yarn|npm" "$toolVersionsFile" |
+		# Get the first match
+		head -n 1)"
+
+	if [[ -z "$packageManager" ]]; then
+		log_debug "No package manager found in .tool-versions file"
+		echo ""
+		return
+	fi
+
+	log_debug "Found package manager in .tool-versions: $packageManager"
+
+	echo "$packageManager"
+}
+
+get_package_manager_from_lock_file() {
+	local -r projectRoot="$(get_project_root)"
+	local packageManager=""
+
+	# Try to get the package manager from the lock file
+	if [[ -f "${projectRoot}/bun.lockb" || -f "${projectRoot}/bun.lock" ]]; then
+		log_debug "Found bun lock file in project root"
+		packageManager="bun"
+	elif [[ -f "${projectRoot}/pnpm-lock.yaml" ]]; then
+		log_debug "Found pnpm lock file in project root"
+		packageManager="pnpm"
+	elif [[ -f "${projectRoot}/yarn.lock" ]]; then
+		log_debug "Found yarn lock file in project root"
+		packageManager="yarn"
+	elif [[ -f "${projectRoot}/package-lock.json" ]]; then
+		log_debug "Found npm lock file in project root"
+		packageManager="npm"
+	else
+		log_debug "No known lock file found in project root"
+		packageManager=""
+	fi
+
+	echo "$packageManager"
+}
+
+get_package_manager_from_global_install() {
+	local packageManager=""
+
+	if is_installed "bun"; then
+		log_debug "Found bun installed globally"
+		packageManager="bun"
+	elif is_installed "pnpm"; then
+		log_debug "Found pnpm installed globally"
+		packageManager="pnpm"
+	elif is_installed "yarn"; then
+		log_debug "Found yarn installed globally"
+		packageManager="yarn"
+	elif is_installed "npm"; then
+		log_debug "Found npm installed globally"
+		packageManager="npm"
+	else
+		log_debug "No known package manager found globally"
+		packageManager=""
+	fi
+
+	echo "$packageManager"
 }
 
 find_package_manager() {
@@ -14,28 +132,31 @@ find_package_manager() {
 	local packageManager=""
 
 	# Try to get the package manager from the `.tool-versions` file
-	packageManager="$(grep -Eo 'bun|pnpm|yarn|npm' 2>/dev/null \
-		"${projectRoot}/.tool-versions" |
-		# Get the first match
-		head -n 1)"
+	packageManager="$(get_package_manager_from_tool_versions)"
 
 	if [[ $packageManager != "" ]]; then
 		echo "$packageManager"
 		return
 	fi
 
-	# Try to get the package manager from the lock file
-	if [[ -f "${projectRoot}/bun.lockb" || -f "${projectRoot}/bun.lock" ]]; then
-		packageManager="bun"
-	elif [[ -f "${projectRoot}/pnpm-lock.yaml" ]]; then
-		packageManager="pnpm"
-	elif [[ -f "${projectRoot}/yarn.lock" ]]; then
-		packageManager="yarn"
-	elif [[ -f "${projectRoot}/package-lock.json" ]]; then
-		packageManager="npm"
+	packageManager="$(get_package_manager_from_lock_file)"
+	if [[ $packageManager != "" ]]; then
+		echo "$packageManager"
+		return
 	fi
 
-	echo "${packageManager:-bun}"
+	packageManager="$(get_package_manager_from_global_install)"
+	if [[ $packageManager != "" ]]; then
+		echo "$packageManager"
+		return
+	fi
+
+	panic "No package manager found. Please install one of bun, pnpm, yarn, or npm."
+}
+
+ensure_logged_in() {
+	local packageManager="$1"
+	"$packageManager" whoami &>/dev/null || "$packageManager" login
 }
 
 ##
@@ -46,11 +167,11 @@ find_package_manager() {
 pm() {
 	local -r packageManager="$(find_package_manager)"
 
-	log_info "Using \`${packageManager}\`"
+	log_info "Using $(italic "$packageManager")"
 
-	# If command is the `i` command, hijack it and run whoami || login.
+	# If command is the `i` command, hijack it and ensure the user is logged in first
 	if [[ "$1" == "i" ]]; then
-		"$packageManager" whoami >/dev/null 2>&1 || "$packageManager" login
+		ensure_logged_in "$packageManager"
 	fi
 
 	exec "$packageManager" "$@"
