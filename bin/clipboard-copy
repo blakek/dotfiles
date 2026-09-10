@@ -1,0 +1,85 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+bold() {
+	printf "\033[1m%s\033[0m" "$*"
+}
+
+italic() {
+	printf "\033[3m%s\033[0m" "$*"
+}
+
+show_usage() {
+	local script_name
+	script_name="$(basename "$0")"
+
+	cat <<-EOF
+		$(italic "$script_name") is a utility to copy text to the clipboard.
+
+		$(bold USAGE)
+		  # Copy text from a pipe to the clipboard
+		  echo 'some text' | ${script_name}
+
+		  # Copy text from a file to the clipboard
+		  ${script_name} <file.txt
+	EOF
+}
+
+is_installed() {
+	command -v "$1" >/dev/null 2>&1
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		-h|--help)
+			show_usage
+			exit 0
+			;;
+		*)
+			echo "Unknown option: $1" >&2
+			show_usage
+			exit 1
+			;;
+	esac
+done
+
+if [[ ! -t 0 ]]; then
+    # Read stdin while preserving trailing newlines.
+    IFS= read -r -d '' text < <(cat; printf '\0')
+fi
+
+if [[ -z ${text:-} ]]; then
+    echo "No input provided" >&2
+    exit 1
+fi
+
+if is_installed pbcopy; then
+    printf '%s' "$text" | pbcopy
+elif [[ -n ${WAYLAND_DISPLAY:-} ]] && is_installed wl-copy; then
+    printf '%s' "$text" | wl-copy 2>/dev/null &
+    disown
+elif [[ -n ${DISPLAY:-} ]] && is_installed xsel; then
+    printf '%s' "$text" | xsel --clipboard
+elif [[ -n ${DISPLAY:-} ]] && is_installed xclip; then
+    printf '%s' "$text" | xclip -selection clipboard
+elif is_installed clip.exe; then
+    printf '%s' "$text" | clip.exe
+fi
+
+# Also copy using OSC 52, which is useful over SSH/in containers.
+if is_installed base64 &&
+   [[ ${TERM:-dumb} != dumb ]] &&
+   [[ -t 1 ]]; then
+    encoded=$(printf '%s' "$text" | base64 | tr -d '\n')
+    printf '\e]52;c;%s\a' "$encoded"
+
+    if [[ -n ${TMUX:-} ]]; then
+        tmux_tty=$(tmux display-message -p '#{client_tty}') || exit 1
+
+        if [[ -w $tmux_tty ]]; then
+            printf '\e]52;c;%s\a' "$encoded" >"$tmux_tty"
+        fi
+    fi
+fi
