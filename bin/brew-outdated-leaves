@@ -11,3 +11,7 @@
 #:  Shows outdated Homebrew packages that are "leaves" (i.e. not dependencies)
 
 comm -12 <(brew outdated | sort) <(brew leaves | sort)
+
+# `brew outdated` shows outdated casks but `brew leaves` only lists formulae, so add casks separately…
+# Also we pipe so it uses the cleaner sorting and removes duplicates
+brew outdated --cask | cat
