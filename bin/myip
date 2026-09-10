@@ -5,7 +5,7 @@ show_usage() {
 	reset=$(tput sgr0)
 	script_name=$(basename "$0")
 
-	echo "${italic}${script_name}${reset} - Fetches your public IP address and copies it to the clipboard (if the ${italic}copy${reset} command is available)."
+	echo "${italic}${script_name}${reset} - Fetches your public IP address and copies it to the clipboard (if the ${italic}clipboard-copy${reset} command is available)."
 }
 
 is_installed() {
@@ -27,8 +27,8 @@ myip() {
 		return 1
 	fi
 
-	if is_installed copy; then
-		echo "$ip" | copy
+	if is_installed clipboard-copy; then
+		echo "$ip" | clipboard-copy
 	else
 		echo "$ip"
 	fi
