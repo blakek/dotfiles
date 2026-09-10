@@ -1,38 +1,6 @@
 #!/usr/bin/env bash
 
 ##
-# Copies stdin to the clipboard using the first available clipboard utility (clipboard, pbcopy, xclip, wl-copy).
-# If no clipboard utility is found, it just prints stdin to stdout.
-# Usage: echo "text to copy" | copy [--no-print]
-# shellcheck disable=SC2120
-##
-copy() {
-	local -a clip_cmd=()
-
-	for cmd in clipboard pbcopy xclip wl-copy; do
-		if isInstalled "$cmd"; then
-			case "$cmd" in
-				xclip) clip_cmd=(xclip -selection clipboard) ;;
-				*) clip_cmd=("$cmd") ;;
-			esac
-			break
-		fi
-	done
-
-	if [[ ${#clip_cmd[@]} -eq 0 ]]; then
-		cat
-		return
-	fi
-
-	if [[ $1 == "--no-print" ]]; then
-		"${clip_cmd[@]}"
-		return
-	fi
-
-	tee /dev/tty | "${clip_cmd[@]}"
-}
-
-##
 # Return truthy/falsy value indicating if every argument is installed
 # (i.e. found in hash lookup)
 # Usage: isInstalled <command...>
