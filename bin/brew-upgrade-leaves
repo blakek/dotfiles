@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+##
+# Updates outdated Homebrew packages that are "leaves" (i.e. not dependencies)
+##
+
+# Lines starting with "#:" are extracted for help text
+
+#:  * `upgrade-leaves`
+#:
+#:  Updates outdated Homebrew packages that are "leaves" (i.e. not dependencies)
+
+mapfile -t packages < <(
+  brew outdated-leaves | gum choose --no-limit
+)
+
+if [[ ${#packages[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+brew upgrade --no-ask "${packages[@]}"
