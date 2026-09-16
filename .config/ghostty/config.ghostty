@@ -5,3 +5,9 @@ cursor-style-blink = true
 # font-family = "JetBrainsMonoNF-Regular"
 theme = Fishish
 window-padding-x = 10
+
+keybind = cmd+\=new_split:right
+
+# fix bug where Ghostty hijacks macOS keybindings in certain scenarios (e.g. when search is open)
+keybind = super+v=paste_from_clipboard
+# cut and copy are broken, but there's no reliable fix for them until https://github.com/ghostty-org/ghostty/pull/12522 is merged
