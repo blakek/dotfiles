@@ -164,6 +164,12 @@ pm() {
 	local packageManager
 	packageManager="$(find_package_manager)" || panic "No package manager found. Please install bun, pnpm, yarn, or npm."
 
+	# Option to print the detected package manager
+	if [[ "$1" == "--print-package-manager" ]]; then
+		echo "$packageManager"
+		return
+	fi
+
 	log_info "Using $(italic "$packageManager")"
 
 	# If command is the `i` command, hijack it and ensure the user is logged in first

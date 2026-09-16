@@ -10,8 +10,11 @@ show_usage() {
 		$(bold epub-pack) - A tool to pack an EPUB directory into a single EPUB file
 
 		$(bold USAGE EXAMPLES)
-			# Pack an EPUB file
-			epub-pack input_directory output.epub
+			# Pack an EPUB file from input_directory to input_directory-packed.epub
+			epub-pack input_directory
+
+			# Pack an EPUB file from input_directory to a specified output file
+			epub-pack input_directory -o output.epub
 
 		$(bold OPTIONS)
 			-h, --help     output usage information and exit

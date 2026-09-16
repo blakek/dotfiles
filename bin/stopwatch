@@ -65,6 +65,7 @@ show_usage() {
 		  stopwatch [options]
 
 		%{bold}OPTIONS%{reset}
+		  -h, --help       Show this help message
 		  --interval       Set the interval for the stopwatch ticks in milliseconds (default: 100)
 		  --no-controls    Disallow keyboard shortcuts for controlling the stopwatch
 		  --no-output      Suppress the final output when the stopwatch is stopped
@@ -151,6 +152,10 @@ stopwatch() {
 
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
+			-h|--help|help)
+				show_usage
+				exit 0
+				;;
 			--no-controls)
 				show_controls="false"
 				shift
@@ -168,7 +173,7 @@ stopwatch() {
 				;;
 			*)
 				error "Unknown option: $1"
-				showUsage
+				show_usage
 				exit 1
 				;;
 		esac
