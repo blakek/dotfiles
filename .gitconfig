@@ -124,5 +124,5 @@ email = oss.ideas@gmail.com
 path = ~/dev/dotfiles/hidden_zapier/.gitconfig
 [includeIf "hasconfig:remote.*.url:https://gitlab.com/zapier/**"]
 path = ~/dev/dotfiles/hidden_zapier/.gitconfig
-[includeIf "hasconfig:remote.*.url:https://*gitlab.com/zapier/**"]
+[includeIf "hasconfig:remote.*.url:https://*@gitlab.com/zapier/**"]
 path = ~/dev/dotfiles/hidden_zapier/.gitconfig
