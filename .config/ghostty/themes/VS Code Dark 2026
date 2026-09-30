@@ -1,0 +1,44 @@
+# VS Code Dark 2026, using editor colors rather than terminal colors
+
+background = #121314
+foreground = #BBBEBF
+
+# black
+palette = 0=#121314
+# red / keywords
+palette = 1=#FF7B72
+# green / tags, additions
+palette = 2=#7EE787
+# yellow / orange / variables
+palette = 3=#FFA657
+# blue / constants, properties
+palette = 4=#79C0FF
+# magenta / functions
+palette = 5=#D2A8FF
+# cyan / strings
+palette = 6=#A5D6FF
+# white / normal syntax foreground
+palette = 7=#C9D1D9
+
+# bright black / comments
+palette = 8=#8B949E
+# bright red / errors
+palette = 9=#FFA198
+# bright green
+palette = 10=#7EE787
+# bright yellow
+palette = 11=#FFA657
+# bright blue
+palette = 12=#79C0FF
+# bright magenta
+palette = 13=#D2A8FF
+# bright cyan
+palette = 14=#A5D6FF
+# bright white
+palette = 15=#F0F6FC
+
+cursor-color = #BBBEBF
+cursor-text = #121314
+
+selection-background = #276782
+selection-foreground = cell-foreground
