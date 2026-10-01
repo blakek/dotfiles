@@ -54,8 +54,12 @@ trustctime = false
 untrackedCache = true
 
 [delta]
+hyperlinks = true
+hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 line-numbers = true
 side-by-side = true
+features = "colibri"
+syntax-theme = "Visual Studio Dark+"
 
 [diff]
 # Detect copies as well as renames
@@ -119,6 +123,9 @@ default = current
 name = Blake Knight
 email = oss.ideas@gmail.com
 
+# delta themes
+[include]
+path = ~/dev/github.com/dandavison/delta/themes.gitconfig
 # Work-specific configurations
 [includeIf "hasconfig:remote.*.url:git@gitlab.com:zapier/**"]
 path = ~/dev/dotfiles/hidden_zapier/.gitconfig
@@ -126,3 +133,9 @@ path = ~/dev/dotfiles/hidden_zapier/.gitconfig
 path = ~/dev/dotfiles/hidden_zapier/.gitconfig
 [includeIf "hasconfig:remote.*.url:https://*@gitlab.com/zapier/**"]
 path = ~/dev/dotfiles/hidden_zapier/.gitconfig
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
