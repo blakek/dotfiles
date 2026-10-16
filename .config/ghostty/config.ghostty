@@ -8,7 +8,9 @@ theme = VS Code Dark 2026
 window-padding-x = 10
 
 keybind = cmd+\=new_split:right
+keybind = cmd+shift+left=previous_tab
+keybind = cmd+shift+right=next_tab
 
 # fix bug where Ghostty hijacks macOS keybindings in certain scenarios (e.g. when search is open)
-keybind = super+v=paste_from_clipboard
+keybind = cmd+v=paste_from_clipboard
 # cut and copy are broken, but there's no reliable fix for them until https://github.com/ghostty-org/ghostty/pull/12522 is merged
