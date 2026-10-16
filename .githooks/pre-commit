@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+staged=$(mktemp)
+formatted=$(mktemp)
+trap 'rm -f "$staged" "$formatted"' EXIT
+
+while IFS= read -r -d '' file; do
+  # Select a formatter, skipping unsupported files.
+  case "$file" in
+    *.fish)
+      formatter=(fish_indent)
+      ;;
+    *.sh | *.bash)
+      formatter=(shfmt --filename "$file")
+      ;;
+    *.js | *.jsx | *.mjs | *.cjs | *.ts | *.tsx | *.mts | *.cts)
+      formatter=(oxfmt --stdin-filepath "$file")
+      ;;
+    *)
+      continue
+      ;;
+  esac
+
+  # Only format regular files, preserving executable permissions.
+  entry=$(git ls-files --stage -- ":(literal)$file")
+  mode=${entry%% *}
+  [[ $mode == 100644 || $mode == 100755 ]] || continue
+
+  # Format the staged version.
+  git show ":$file" > "$staged"
+  "${formatter[@]}" < "$staged" > "$formatted"
+
+  # Protect against formatters unexpectedly returning empty output.
+  if [[ -s $staged && ! -s $formatted ]]; then
+    echo "Formatter returned empty output: $file" >&2
+    exit 1
+  fi
+
+  oid=$(git hash-object -w "$formatted")
+
+  # Format the working tree without staging its changes.
+  if [[ -f $file && ! -L $file ]]; then
+    "${formatter[@]}" < "$file" > "$formatted"
+
+    if [[ -s $file && ! -s $formatted ]]; then
+      echo "Formatter returned empty output: $file" >&2
+      exit 1
+    fi
+
+    if ! cmp -s "$file" "$formatted"; then
+      cat "$formatted" > "$file"
+    fi
+  fi
+
+  # Update only the staged snapshot.
+  git update-index --cacheinfo "$mode,$oid,$file"
+done < <(
+  git diff --cached --name-only --diff-filter=ACMR -z
+)
