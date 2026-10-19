@@ -21,7 +21,7 @@ download_audio() {
 			;;
 	esac
 
-	yt-dlp --extract-audio --audio-format m4a "$@"
+	yt-dlp --extract-audio --audio-format m4a --js-runtimes bun "$@"
 }
 
 download_audio "$@"
